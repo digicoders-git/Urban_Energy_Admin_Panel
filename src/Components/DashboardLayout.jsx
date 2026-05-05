@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Logo from '../../public/urbanlogo.png'
+import MDEditor from '@uiw/react-md-editor'
 import {
   AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
@@ -12,33 +13,9 @@ import {
   FaSignOutAlt, FaTimes, FaBook, FaPlus
 } from "react-icons/fa"
 
-// ══════════════════════════════════════════════════════
-//  MOCK DATA
-// ══════════════════════════════════════════════════════
-const MOCK_CONTACTS = [
-  { id: 1, name: 'Rajesh Kumar', phone: '+91 98000 11111', email: 'rajesh@gmail.com', city: 'Lucknow', bill: '4500', message: 'Want 3kW system for home', date: '2025-05-01', status: 'new' },
-  { id: 2, name: 'Priya Singh', phone: '+91 98000 22222', email: 'priya@gmail.com', city: 'Kanpur', bill: '8000', message: 'Commercial rooftop query', date: '2025-05-02', status: 'contacted' },
-  { id: 3, name: 'Amit Verma', phone: '+91 98000 33333', email: 'amit@gmail.com', city: 'Agra', bill: '3200', message: 'Subsidy details required', date: '2025-05-02', status: 'converted' },
-  { id: 4, name: 'Sunita Yadav', phone: '+91 98000 44444', email: 'sunita@gmail.com', city: 'Varanasi', bill: '6000', message: 'Need hybrid solar system', date: '2025-05-03', status: 'new' },
-  { id: 5, name: 'Deepak Sharma', phone: '+91 98000 55555', email: 'deepak@gmail.com', city: 'Allahabad', bill: '5500', message: '5kW system quote needed', date: '2025-05-03', status: 'contacted' },
-  { id: 6, name: 'Neha Gupta', phone: '+91 98000 66666', email: 'neha@gmail.com', city: 'Lucknow', bill: '7200', message: 'Factory installation query', date: '2025-05-04', status: 'new' },
-]
-
-const MOCK_QUERIES = [
-  { id: 1, name: 'Ravi Tiwari', email: 'ravi@gmail.com', subject: 'Net metering process', message: 'How long does DISCOM approval take in Lucknow?', date: '2025-05-01', status: 'open', priority: 'high' },
-  { id: 2, name: 'Meena Joshi', email: 'meena@gmail.com', subject: 'Subsidy eligibility', message: 'Am I eligible for PM Surya Ghar subsidy?', date: '2025-05-02', status: 'resolved', priority: 'medium' },
-  { id: 3, name: 'Suresh Patel', email: 'suresh@gmail.com', subject: 'Panel warranty', message: 'What is the panel warranty period?', date: '2025-05-02', status: 'open', priority: 'low' },
-  { id: 4, name: 'Kavita Mishra', email: 'kavita@gmail.com', subject: 'Installation timeline', message: 'How long does a 5kW installation take?', date: '2025-05-03', status: 'in-progress', priority: 'medium' },
-  { id: 5, name: 'Alok Srivastava', email: 'alok@gmail.com', subject: 'Financing options', message: 'Do you offer EMI or bank loan tie-ups?', date: '2025-05-04', status: 'open', priority: 'high' },
-]
-
-const MOCK_BLOGS = [
-  { id: 1, title: 'How PM Surya Ghar Yojana Works in 2025', slug: 'pm-surya-ghar-2025', category: 'Government Schemes', author: 'Arjun Mehta', date: '2025-04-15', status: 'published', views: 3420, tags: ['subsidy', 'government', 'solar'], excerpt: 'Complete guide to claiming up to ₹78,000 in government solar subsidies for your home.', content: "The PM Surya Ghar Muft Bijli Yojana is India's flagship rooftop solar scheme...", featured: true, image: '' },
-  { id: 2, title: 'Top 5 Solar Panels for Indian Climate', slug: 'top-solar-panels-india', category: 'Product Guide', author: 'Priya Sharma', date: '2025-04-22', status: 'published', views: 2180, tags: ['panels', 'review', 'buying guide'], excerpt: "We tested 20+ panels across different climates. Here's what works best in India.", content: 'Choosing the right solar panel for Indian conditions requires...', featured: false, image: '' },
-  { id: 3, title: 'Net Metering in UP: Step by Step Guide', slug: 'net-metering-up-guide', category: 'Installation', author: 'Rohit Verma', date: '2025-04-28', status: 'published', views: 1950, tags: ['net metering', 'UP', 'DISCOM'], excerpt: 'Everything about getting net metering approved in Uttar Pradesh.', content: 'Net metering allows you to sell excess solar energy back to the grid...', featured: false, image: '' },
-  { id: 4, title: 'Solar ROI Calculator: Will It Pay Off?', slug: 'solar-roi-calculator', category: 'Finance', author: 'Arjun Mehta', date: '2025-05-01', status: 'draft', views: 0, tags: ['roi', 'savings', 'calculator'], excerpt: 'Use our detailed ROI model to see exactly when your solar system pays for itself.', content: 'Return on Investment for solar in India has never been better...', featured: false, image: '' },
-  { id: 5, title: 'Commercial Solar: Hidden Costs Revealed', slug: 'commercial-solar-costs', category: 'Commercial', author: 'Priya Sharma', date: '2025-05-03', status: 'draft', views: 0, tags: ['commercial', 'cost', 'EPC'], excerpt: 'Before signing any commercial solar contract, read this detailed cost breakdown.', content: 'Commercial solar installations involve more than just panel costs...', featured: false, image: '' },
-]
+const API = import.meta.env.VITE_API_URL
+const getToken = () => localStorage.getItem('token')
+const authHeaders = () => ({ 'Content-Type': 'application/json', Authorization: `Bearer ${getToken()}` })
 
 const CHART_QUERIES = [
   { month: 'Jan', contacts: 38, queries: 22, conversions: 14 },
@@ -378,15 +355,15 @@ function Dashboard({ contacts, queries, blogs }) {
           </thead>
           <tbody>
             {contacts.slice(0, 5).map((c, i) => (
-              <tr key={c.id} style={{ background: i % 2 === 0 ? '#fff' : '#FAFBFF', transition: 'background 0.15s' }}
+              <tr key={c._id} style={{ background: i % 2 === 0 ? '#fff' : '#FAFBFF', transition: 'background 0.15s' }}
                 onMouseEnter={e => e.currentTarget.style.background = 'rgba(255,122,0,0.04)'}
                 onMouseLeave={e => e.currentTarget.style.background = i % 2 === 0 ? '#fff' : '#FAFBFF'}
               >
-                <td style={{ padding: '12px 14px', color: S.text, fontSize: 13, fontFamily: 'Outfit,sans-serif', fontWeight: 700, borderBottom: `1px solid ${S.cardBorder}` }}>{c.name}</td>
+                <td style={{ padding: '12px 14px', color: S.text, fontSize: 13, fontFamily: 'Outfit,sans-serif', fontWeight: 700, borderBottom: `1px solid ${S.cardBorder}` }}>{c.fullName}</td>
                 <td style={{ padding: '12px 14px', color: S.textMuted, fontSize: 13, fontFamily: 'Outfit,sans-serif', borderBottom: `1px solid ${S.cardBorder}` }}>{c.city}</td>
-                <td style={{ padding: '12px 14px', color: S.orange, fontSize: 13, fontFamily: 'Outfit,sans-serif', fontWeight: 700, borderBottom: `1px solid ${S.cardBorder}` }}>₹{c.bill}</td>
-                <td style={{ padding: '12px 14px', color: S.textDim, fontSize: 12, fontFamily: 'Outfit,sans-serif', borderBottom: `1px solid ${S.cardBorder}` }}>{c.date}</td>
-                <td style={{ padding: '12px 14px', borderBottom: `1px solid ${S.cardBorder}` }}><Badge label={c.status} /></td>
+                <td style={{ padding: '12px 14px', color: S.orange, fontSize: 13, fontFamily: 'Outfit,sans-serif', fontWeight: 700, borderBottom: `1px solid ${S.cardBorder}` }}>₹{c.monthlyBill}</td>
+                <td style={{ padding: '12px 14px', color: S.textDim, fontSize: 12, fontFamily: 'Outfit,sans-serif', borderBottom: `1px solid ${S.cardBorder}` }}>{c.createdAt?.slice(0, 10)}</td>
+                <td style={{ padding: '12px 14px', borderBottom: `1px solid ${S.cardBorder}` }}><Badge label={c.status || 'new'} /></td>
               </tr>
             ))}
           </tbody>
@@ -405,131 +382,133 @@ function Contacts({ contacts, setContacts }) {
   const [selected, setSelected] = useState(null)
 
   const filtered = contacts.filter(c => {
-    const m = c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.city.toLowerCase().includes(search.toLowerCase()) ||
-      c.email.toLowerCase().includes(search.toLowerCase())
+    const m = (c.fullName || '').toLowerCase().includes(search.toLowerCase()) ||
+      (c.city || '').toLowerCase().includes(search.toLowerCase()) ||
+      (c.email || '').toLowerCase().includes(search.toLowerCase())
     return m && (filter === 'all' || c.status === filter)
   })
 
   const updateStatus = (id, status) => {
-    setContacts(prev => prev.map(c => c.id === id ? { ...c, status } : c))
-    if (selected?.id === id) setSelected(p => ({ ...p, status }))
+    setContacts(prev => prev.map(c => c._id === id ? { ...c, status } : c))
+    if (selected?._id === id) setSelected(p => ({ ...p, status }))
   }
-  const deleteContact = id => {
-    setContacts(prev => prev.filter(c => c.id !== id))
-    if (selected?.id === id) setSelected(null)
+  const deleteContact = async id => {
+    await fetch(`${API}/contact/${id}`, { method: 'DELETE', headers: authHeaders() })
+    setContacts(prev => prev.filter(c => c._id !== id))
+    setSelected(null)
   }
 
   return (
-    <div style={{ display: 'flex', gap: 20, height: 'calc(100vh - 130px)' }}>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 14, minWidth: 0 }}>
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          {/* Search with icon */}
-          <div style={{ flex: 1, minWidth: 200, position: 'relative' }}>
-            <FaSearch style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: S.textDim, fontSize: 13, pointerEvents: 'none' }} />
-            <input
-              placeholder="Search contacts..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              style={{ width: '100%', background: '#fff', border: `1.5px solid ${S.cardBorder}`, borderRadius: 10, padding: '9px 14px 9px 36px', color: S.text, fontSize: 14, fontFamily: 'Outfit,sans-serif', outline: 'none', boxShadow: S.cardShadow, boxSizing: 'border-box' }}
-              onFocus={e => { e.target.style.borderColor = S.orange; e.target.style.boxShadow = '0 0 0 3px rgba(255,122,0,0.1)' }}
-              onBlur={e => { e.target.style.borderColor = S.cardBorder; e.target.style.boxShadow = S.cardShadow }}
-            />
-          </div>
-          {['all', 'new', 'contacted', 'converted'].map(f => (
-            <Btn key={f} variant={filter === f ? 'primary' : 'secondary'} size="sm" onClick={() => setFilter(f)}>
-              {f.charAt(0).toUpperCase() + f.slice(1)}
-            </Btn>
-          ))}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+        <div style={{ flex: 1, minWidth: 200, position: 'relative' }}>
+          <FaSearch style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: S.textDim, fontSize: 13, pointerEvents: 'none' }} />
+          <input
+            placeholder="Search contacts..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{ width: '100%', background: '#fff', border: `1.5px solid ${S.cardBorder}`, borderRadius: 10, padding: '9px 14px 9px 36px', color: S.text, fontSize: 14, fontFamily: 'Outfit,sans-serif', outline: 'none', boxShadow: S.cardShadow, boxSizing: 'border-box' }}
+            onFocus={e => { e.target.style.borderColor = S.orange; e.target.style.boxShadow = '0 0 0 3px rgba(255,122,0,0.1)' }}
+            onBlur={e => { e.target.style.borderColor = S.cardBorder; e.target.style.boxShadow = S.cardShadow }}
+          />
         </div>
-        <div style={{ overflowY: 'auto', flex: 1 }}>
-          {filtered.map(c => {
-            const isSel = selected?.id === c.id
-            return (
-              <div key={c.id} onClick={() => setSelected(c)}
-                style={{
-                  background: isSel ? 'linear-gradient(135deg, rgba(255,122,0,0.06), rgba(255,193,7,0.04))' : '#fff',
-                  border: `1.5px solid ${isSel ? S.orange : S.cardBorder}`,
-                  borderRadius: 14, padding: '14px 16px', marginBottom: 10, cursor: 'pointer',
-                  boxShadow: isSel ? `0 6px 24px rgba(255,122,0,0.15)` : S.cardShadow,
-                  transition: 'all 0.18s', display: 'flex', alignItems: 'center', gap: 14,
-                  transform: isSel ? 'translateX(4px)' : 'translateX(0)',
-                }}
-                onMouseEnter={e => { if (!isSel) { e.currentTarget.style.borderColor = S.orange; e.currentTarget.style.boxShadow = S.cardShadowHover } }}
-                onMouseLeave={e => { if (!isSel) { e.currentTarget.style.borderColor = S.cardBorder; e.currentTarget.style.boxShadow = S.cardShadow } }}
-              >
-                <div style={{
-                  width: 44, height: 44, borderRadius: '50%',
-                  background: isSel ? S.orange : 'rgba(255,122,0,0.1)',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  color: isSel ? '#fff' : S.orange, fontWeight: 800, fontSize: 16,
-                  fontFamily: 'Outfit,sans-serif', flexShrink: 0, transition: 'all 0.18s'
-                }}>{c.name.charAt(0)}</div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ color: S.text, fontSize: 14, fontWeight: 700, fontFamily: 'Outfit,sans-serif' }}>{c.name}</div>
-                  <div style={{ color: S.textMuted, fontSize: 12, fontFamily: 'Outfit,sans-serif' }}>{c.city} · ₹{c.bill}/mo</div>
-                </div>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 5 }}>
-                  <Badge label={c.status} />
-                  <span style={{ color: S.textDim, fontSize: 11 }}>{c.date}</span>
-                </div>
-              </div>
-            )
-          })}
-          {filtered.length === 0 && <div style={{ textAlign: 'center', color: S.textMuted, padding: 40, fontFamily: 'Outfit,sans-serif' }}>No contacts found</div>}
-        </div>
+        {['all', 'new', 'contacted', 'converted'].map(f => (
+          <Btn key={f} variant={filter === f ? 'primary' : 'secondary'} size="sm" onClick={() => setFilter(f)}>
+            {f.charAt(0).toUpperCase() + f.slice(1)}
+          </Btn>
+        ))}
       </div>
 
-      {selected ? (
-        <Card hoverable={false} style={{ width: 320, padding: 24, flexShrink: 0, overflowY: 'auto' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 22 }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
+        {filtered.map(c => (
+          <div key={c._id} onClick={() => setSelected(c)}
+            style={{
+              background: '#fff', border: `1.5px solid ${S.cardBorder}`,
+              borderRadius: 14, padding: '14px 16px', cursor: 'pointer',
+              boxShadow: S.cardShadow, transition: 'all 0.18s',
+              display: 'flex', alignItems: 'center', gap: 14,
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = S.orange; e.currentTarget.style.boxShadow = S.cardShadowHover }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = S.cardBorder; e.currentTarget.style.boxShadow = S.cardShadow }}
+          >
             <div style={{
-              width: 58, height: 58, borderRadius: '50%', background: S.orange,
+              width: 44, height: 44, borderRadius: '50%', background: 'rgba(255,122,0,0.1)',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#fff', fontWeight: 900, fontSize: 22, fontFamily: 'Outfit,sans-serif',
-              boxShadow: '0 4px 16px rgba(255,122,0,0.35)'
-            }}>{selected.name.charAt(0)}</div>
-            <div>
-              <div style={{ color: S.text, fontSize: 16, fontWeight: 800, fontFamily: 'Outfit,sans-serif', marginBottom: 4 }}>{selected.name}</div>
-              <Badge label={selected.status} />
+              color: S.orange, fontWeight: 800, fontSize: 16, fontFamily: 'Outfit,sans-serif', flexShrink: 0
+            }}>{(c.fullName || 'U').charAt(0)}</div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ color: S.text, fontSize: 14, fontWeight: 700, fontFamily: 'Outfit,sans-serif' }}>{c.fullName}</div>
+              <div style={{ color: S.textMuted, fontSize: 12, fontFamily: 'Outfit,sans-serif' }}>{c.city} · ₹{c.monthlyBill}/mo</div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 5 }}>
+              <Badge label={c.status || 'new'} />
+              <span style={{ color: S.textDim, fontSize: 11 }}>{c.createdAt?.slice(0, 10)}</span>
             </div>
           </div>
-          {[
-            { icon: <FaPhoneAlt style={{ color: S.orange, fontSize: 11 }} />, label: 'Phone', val: selected.phone },
-            { icon: <FaEnvelope style={{ color: S.orange, fontSize: 11 }} />, label: 'Email', val: selected.email },
-            { icon: <FaMapMarkerAlt style={{ color: S.orange, fontSize: 11 }} />, label: 'City', val: selected.city },
-            { icon: <FaRupeeSign style={{ color: S.orange, fontSize: 11 }} />, label: 'Monthly Bill', val: `₹${selected.bill}` },
-            { icon: <FaCalendarAlt style={{ color: S.orange, fontSize: 11 }} />, label: 'Date', val: selected.date },
-          ].map(row => (
-            <div key={row.label} style={{ marginBottom: 14, paddingBottom: 14, borderBottom: `1px solid ${S.cardBorder}` }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: S.textMuted, fontSize: 11, fontFamily: 'Outfit,sans-serif', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 3 }}>
-                {row.icon} {row.label}
+        ))}
+        {filtered.length === 0 && <div style={{ textAlign: 'center', color: S.textMuted, padding: 40, fontFamily: 'Outfit,sans-serif', gridColumn: '1/-1' }}>No contacts found</div>}
+      </div>
+
+      {/* MODAL */}
+      {selected && (
+        <div onClick={() => setSelected(null)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: 20 }}
+        >
+          <div onClick={e => e.stopPropagation()}
+            style={{ background: '#fff', borderRadius: 20, padding: 28, width: '100%', maxWidth: 460, boxShadow: '0 20px 60px rgba(0,0,0,0.25)', maxHeight: '90vh', overflowY: 'auto' }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 22 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                <div style={{ width: 52, height: 52, borderRadius: '50%', background: S.orange, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 900, fontSize: 20, boxShadow: '0 4px 16px rgba(255,122,0,0.35)' }}>
+                  {(selected.fullName || 'U').charAt(0)}
+                </div>
+                <div>
+                  <div style={{ color: S.text, fontSize: 17, fontWeight: 800, fontFamily: 'Outfit,sans-serif' }}>{selected.fullName}</div>
+                  <Badge label={selected.status || 'new'} />
+                </div>
               </div>
-              <div style={{ color: S.text, fontSize: 13, fontFamily: 'Outfit,sans-serif', fontWeight: 600 }}>{row.val}</div>
+              <button onClick={() => setSelected(null)} style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: 32, height: 32, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: S.textMuted }}>
+                <FaTimes />
+              </button>
             </div>
-          ))}
-          <div style={{ marginBottom: 18 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: S.textMuted, fontSize: 11, fontFamily: 'Outfit,sans-serif', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
-              <FaComments style={{ color: S.orange, fontSize: 11 }} /> Message
+
+            {[
+              { icon: <FaPhoneAlt style={{ color: S.orange, fontSize: 11 }} />, label: 'Phone', val: selected.phoneNumber },
+              { icon: <FaEnvelope style={{ color: S.orange, fontSize: 11 }} />, label: 'Email', val: selected.email },
+              { icon: <FaMapMarkerAlt style={{ color: S.orange, fontSize: 11 }} />, label: 'City', val: selected.city },
+              { icon: <FaRupeeSign style={{ color: S.orange, fontSize: 11 }} />, label: 'Monthly Bill', val: `₹${selected.monthlyBill}` },
+              { icon: <FaCalendarAlt style={{ color: S.orange, fontSize: 11 }} />, label: 'Date', val: selected.createdAt?.slice(0, 10) },
+            ].map(row => (
+              <div key={row.label} style={{ marginBottom: 14, paddingBottom: 14, borderBottom: `1px solid ${S.cardBorder}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: S.textMuted, fontSize: 11, fontFamily: 'Outfit,sans-serif', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 3 }}>
+                  {row.icon} {row.label}
+                </div>
+                <div style={{ color: S.text, fontSize: 13, fontFamily: 'Outfit,sans-serif', fontWeight: 600 }}>{row.val}</div>
+              </div>
+            ))}
+
+            {selected.message && (
+              <div style={{ marginBottom: 18 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: S.textMuted, fontSize: 11, fontFamily: 'Outfit,sans-serif', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
+                  <FaComments style={{ color: S.orange, fontSize: 11 }} /> Message
+                </div>
+                <div style={{ color: S.text, fontSize: 13, fontFamily: 'Outfit,sans-serif', lineHeight: 1.65, background: '#F8FAFF', borderRadius: 10, padding: 12, border: `1px solid ${S.cardBorder}` }}>{selected.message}</div>
+              </div>
+            )}
+
+            <div style={{ marginBottom: 18 }}>
+              <div style={{ color: S.textMuted, fontSize: 11, fontFamily: 'Outfit,sans-serif', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Update Status</div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {['new', 'contacted', 'converted'].map(s => (
+                  <Btn key={s} variant={selected.status === s ? 'primary' : 'secondary'} size="sm" onClick={() => updateStatus(selected._id, s)}>{s}</Btn>
+                ))}
+              </div>
             </div>
-            <div style={{ color: S.text, fontSize: 13, fontFamily: 'Outfit,sans-serif', lineHeight: 1.65, background: '#F8FAFF', borderRadius: 10, padding: '12px', border: `1px solid ${S.cardBorder}` }}>{selected.message}</div>
+
+            <Btn variant="danger" onClick={() => deleteContact(selected._id)} style={{ width: '100%', justifyContent: 'center' }}>
+              <FaTrash style={{ fontSize: 12 }} /> Delete Contact
+            </Btn>
           </div>
-          <div style={{ marginBottom: 18 }}>
-            <div style={{ color: S.textMuted, fontSize: 11, fontFamily: 'Outfit,sans-serif', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Update Status</div>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {['new', 'contacted', 'converted'].map(s => (
-                <Btn key={s} variant={selected.status === s ? 'primary' : 'secondary'} size="sm" onClick={() => updateStatus(selected.id, s)}>{s}</Btn>
-              ))}
-            </div>
-          </div>
-          <Btn variant="danger" onClick={() => deleteContact(selected.id)} style={{ width: '100%', justifyContent: 'center' }}>
-            <FaTrash style={{ fontSize: 12 }} /> Delete Contact
-          </Btn>
-        </Card>
-      ) : (
-        <div style={{ width: 300, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: S.textMuted, fontFamily: 'Outfit,sans-serif', gap: 10 }}>
-          <FaArrowUp style={{ fontSize: 36, color: S.textDim }} />
-          <div style={{ fontSize: 14 }}>Select a contact to view details</div>
         </div>
       )}
     </div>
@@ -545,129 +524,116 @@ function Queries({ queries, setQueries }) {
   const [selected, setSelected] = useState(null)
 
   const filtered = queries.filter(q => {
-    const m = q.name.toLowerCase().includes(search.toLowerCase()) ||
-      q.subject.toLowerCase().includes(search.toLowerCase())
+    const m = (q.name || '').toLowerCase().includes(search.toLowerCase()) ||
+      (q.requirement || '').toLowerCase().includes(search.toLowerCase())
     return m && (filter === 'all' || q.status === filter)
   })
 
   const updateQuery = (id, key, val) => {
-    setQueries(prev => prev.map(q => q.id === id ? { ...q, [key]: val } : q))
-    if (selected?.id === id) setSelected(p => ({ ...p, [key]: val }))
+    setQueries(prev => prev.map(q => q._id === id ? { ...q, [key]: val } : q))
+    if (selected?._id === id) setSelected(p => ({ ...p, [key]: val }))
   }
-  const deleteQuery = id => {
-    setQueries(prev => prev.filter(q => q.id !== id))
-    if (selected?.id === id) setSelected(null)
+  const deleteQuery = async id => {
+    await fetch(`${API}/query/${id}`, { method: 'DELETE', headers: authHeaders() })
+    setQueries(prev => prev.filter(q => q._id !== id))
+    setSelected(null)
   }
 
-  // Priority dot colors (replacing emoji)
   const priorityColor = { high: '#dc2626', medium: '#d97706', low: '#16a34a' }
 
   return (
-    <div style={{ display: 'flex', gap: 20, height: 'calc(100vh - 130px)' }}>
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 14, minWidth: 0 }}>
-        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-          <div style={{ flex: 1, minWidth: 200, position: 'relative' }}>
-            <FaSearch style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: S.textDim, fontSize: 13, pointerEvents: 'none' }} />
-            <input
-              placeholder="Search queries..."
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              style={{ width: '100%', background: '#fff', border: `1.5px solid ${S.cardBorder}`, borderRadius: 10, padding: '9px 14px 9px 36px', color: S.text, fontSize: 14, fontFamily: 'Outfit,sans-serif', outline: 'none', boxShadow: S.cardShadow, boxSizing: 'border-box' }}
-              onFocus={e => { e.target.style.borderColor = S.orange; e.target.style.boxShadow = '0 0 0 3px rgba(255,122,0,0.1)' }}
-              onBlur={e => { e.target.style.borderColor = S.cardBorder; e.target.style.boxShadow = S.cardShadow }}
-            />
-          </div>
-          {['all', 'open', 'in-progress', 'resolved'].map(f => (
-            <Btn key={f} variant={filter === f ? 'primary' : 'secondary'} size="sm" onClick={() => setFilter(f)}>
-              {f.charAt(0).toUpperCase() + f.slice(1)}
-            </Btn>
-          ))}
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+        <div style={{ flex: 1, minWidth: 200, position: 'relative' }}>
+          <FaSearch style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', color: S.textDim, fontSize: 13, pointerEvents: 'none' }} />
+          <input
+            placeholder="Search queries..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            style={{ width: '100%', background: '#fff', border: `1.5px solid ${S.cardBorder}`, borderRadius: 10, padding: '9px 14px 9px 36px', color: S.text, fontSize: 14, fontFamily: 'Outfit,sans-serif', outline: 'none', boxShadow: S.cardShadow, boxSizing: 'border-box' }}
+            onFocus={e => { e.target.style.borderColor = S.orange; e.target.style.boxShadow = '0 0 0 3px rgba(255,122,0,0.1)' }}
+            onBlur={e => { e.target.style.borderColor = S.cardBorder; e.target.style.boxShadow = S.cardShadow }}
+          />
         </div>
-        <div style={{ overflowY: 'auto', flex: 1 }}>
-          {filtered.map(q => {
-            const isSel = selected?.id === q.id
-            return (
-              <div key={q.id} onClick={() => setSelected(q)}
-                style={{
-                  background: isSel ? 'linear-gradient(135deg, rgba(255,122,0,0.05), rgba(255,193,7,0.03))' : '#fff',
-                  border: `1.5px solid ${isSel ? S.orange : S.cardBorder}`,
-                  borderRadius: 14, padding: '14px 16px', marginBottom: 10, cursor: 'pointer',
-                  boxShadow: isSel ? `0 6px 24px rgba(255,122,0,0.14)` : S.cardShadow,
-                  transition: 'all 0.18s', transform: isSel ? 'translateX(4px)' : 'none',
-                }}
-                onMouseEnter={e => { if (!isSel) { e.currentTarget.style.borderColor = S.orange; e.currentTarget.style.boxShadow = S.cardShadowHover } }}
-                onMouseLeave={e => { if (!isSel) { e.currentTarget.style.borderColor = S.cardBorder; e.currentTarget.style.boxShadow = S.cardShadow } }}
-              >
-                <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                      {/* Colored dot instead of emoji */}
-                      <div style={{ width: 8, height: 8, borderRadius: '50%', background: priorityColor[q.priority], flexShrink: 0 }} />
-                      <div style={{ color: S.text, fontSize: 14, fontWeight: 700, fontFamily: 'Outfit,sans-serif' }}>{q.subject}</div>
-                    </div>
-                    <div style={{ color: S.textMuted, fontSize: 12, fontFamily: 'Outfit,sans-serif', marginBottom: 5 }}>{q.name} · {q.email}</div>
-                    <div style={{ color: S.textDim, fontSize: 12, fontFamily: 'Outfit,sans-serif', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{q.message}</div>
-                  </div>
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 6, flexShrink: 0 }}>
-                    <Badge label={q.status} />
-                    <Badge label={q.priority} />
-                  </div>
-                </div>
-              </div>
-            )
-          })}
-          {filtered.length === 0 && <div style={{ textAlign: 'center', color: S.textMuted, padding: 40, fontFamily: 'Outfit,sans-serif' }}>No queries found</div>}
-        </div>
+        {['all', 'open', 'in-progress', 'resolved'].map(f => (
+          <Btn key={f} variant={filter === f ? 'primary' : 'secondary'} size="sm" onClick={() => setFilter(f)}>
+            {f.charAt(0).toUpperCase() + f.slice(1)}
+          </Btn>
+        ))}
       </div>
 
-      {selected ? (
-        <Card hoverable={false} style={{ width: 340, padding: 24, flexShrink: 0, overflowY: 'auto' }}>
-          <div style={{ marginBottom: 20 }}>
-            <div style={{ color: S.text, fontSize: 16, fontWeight: 800, fontFamily: 'Outfit,sans-serif', marginBottom: 8 }}>{selected.subject}</div>
-            <div style={{ display: 'flex', gap: 8 }}><Badge label={selected.status} /><Badge label={selected.priority} /></div>
-          </div>
-          {[
-            { icon: <FaUser style={{ color: S.orange, fontSize: 11 }} />, label: 'From', val: selected.name },
-            { icon: <FaEnvelope style={{ color: S.orange, fontSize: 11 }} />, label: 'Email', val: selected.email },
-            { icon: <FaCalendarAlt style={{ color: S.orange, fontSize: 11 }} />, label: 'Date', val: selected.date },
-          ].map(row => (
-            <div key={row.label} style={{ marginBottom: 14, paddingBottom: 14, borderBottom: `1px solid ${S.cardBorder}` }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: S.textMuted, fontSize: 11, fontFamily: 'Outfit,sans-serif', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 3 }}>
-                {row.icon} {row.label}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 }}>
+        {filtered.map(q => (
+          <div key={q._id} onClick={() => setSelected(q)}
+            style={{
+              background: '#fff', border: `1.5px solid ${S.cardBorder}`,
+              borderRadius: 14, padding: '14px 16px', cursor: 'pointer',
+              boxShadow: S.cardShadow, transition: 'all 0.18s',
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = S.orange; e.currentTarget.style.boxShadow = S.cardShadowHover }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = S.cardBorder; e.currentTarget.style.boxShadow = S.cardShadow }}
+          >
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+                  <div style={{ width: 8, height: 8, borderRadius: '50%', background: priorityColor[q.priority] || '#94a3b8', flexShrink: 0 }} />
+                  <div style={{ color: S.text, fontSize: 14, fontWeight: 700, fontFamily: 'Outfit,sans-serif', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{q.requirement}</div>
+                </div>
+                <div style={{ color: S.textMuted, fontSize: 12, fontFamily: 'Outfit,sans-serif', marginBottom: 4 }}>{q.name} · {q.phone}</div>
+                <div style={{ color: S.textDim, fontSize: 12, fontFamily: 'Outfit,sans-serif' }}>{q.city}</div>
               </div>
-              <div style={{ color: S.text, fontSize: 13, fontFamily: 'Outfit,sans-serif', fontWeight: 600 }}>{row.val}</div>
-            </div>
-          ))}
-          <div style={{ marginBottom: 18 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: S.textMuted, fontSize: 11, fontFamily: 'Outfit,sans-serif', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>
-              <FaComments style={{ color: S.orange, fontSize: 11 }} /> Message
-            </div>
-            <div style={{ color: S.text, fontSize: 13, lineHeight: 1.65, background: '#F8FAFF', borderRadius: 10, padding: 12, border: `1px solid ${S.cardBorder}`, fontFamily: 'Outfit,sans-serif' }}>{selected.message}</div>
-          </div>
-          <div style={{ marginBottom: 14 }}>
-            <div style={{ color: S.textMuted, fontSize: 11, fontFamily: 'Outfit,sans-serif', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Status</div>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
-              {['open', 'in-progress', 'resolved'].map(s => (
-                <Btn key={s} variant={selected.status === s ? 'primary' : 'secondary'} size="sm" onClick={() => updateQuery(selected.id, 'status', s)}>{s}</Btn>
-              ))}
+              <Badge label={q.status || 'open'} />
             </div>
           </div>
-          <div style={{ marginBottom: 20 }}>
-            <div style={{ color: S.textMuted, fontSize: 11, fontFamily: 'Outfit,sans-serif', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Priority</div>
-            <div style={{ display: 'flex', gap: 8 }}>
-              {['low', 'medium', 'high'].map(p => (
-                <Btn key={p} variant={selected.priority === p ? 'primary' : 'secondary'} size="sm" onClick={() => updateQuery(selected.id, 'priority', p)}>{p}</Btn>
-              ))}
+        ))}
+        {filtered.length === 0 && <div style={{ textAlign: 'center', color: S.textMuted, padding: 40, fontFamily: 'Outfit,sans-serif', gridColumn: '1/-1' }}>No queries found</div>}
+      </div>
+
+      {/* MODAL */}
+      {selected && (
+        <div onClick={() => setSelected(null)}
+          style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999, padding: 20 }}
+        >
+          <div onClick={e => e.stopPropagation()}
+            style={{ background: '#fff', borderRadius: 20, padding: 28, width: '100%', maxWidth: 460, boxShadow: '0 20px 60px rgba(0,0,0,0.25)', maxHeight: '90vh', overflowY: 'auto' }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+              <div>
+                <div style={{ color: S.text, fontSize: 17, fontWeight: 800, fontFamily: 'Outfit,sans-serif', marginBottom: 6 }}>{selected.requirement}</div>
+                <Badge label={selected.status || 'open'} />
+              </div>
+              <button onClick={() => setSelected(null)} style={{ background: '#f1f5f9', border: 'none', borderRadius: '50%', width: 32, height: 32, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', color: S.textMuted }}>
+                <FaTimes />
+              </button>
             </div>
+
+            {[
+              { icon: <FaUser style={{ color: S.orange, fontSize: 11 }} />, label: 'Name', val: selected.name },
+              { icon: <FaPhoneAlt style={{ color: S.orange, fontSize: 11 }} />, label: 'Phone', val: selected.phone },
+              { icon: <FaMapMarkerAlt style={{ color: S.orange, fontSize: 11 }} />, label: 'City', val: selected.city },
+              { icon: <FaCalendarAlt style={{ color: S.orange, fontSize: 11 }} />, label: 'Date', val: selected.createdAt?.slice(0, 10) },
+            ].map(row => (
+              <div key={row.label} style={{ marginBottom: 14, paddingBottom: 14, borderBottom: `1px solid ${S.cardBorder}` }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: S.textMuted, fontSize: 11, fontFamily: 'Outfit,sans-serif', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 3 }}>
+                  {row.icon} {row.label}
+                </div>
+                <div style={{ color: S.text, fontSize: 13, fontFamily: 'Outfit,sans-serif', fontWeight: 600 }}>{row.val}</div>
+              </div>
+            ))}
+
+            <div style={{ marginBottom: 18 }}>
+              <div style={{ color: S.textMuted, fontSize: 11, fontFamily: 'Outfit,sans-serif', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 8 }}>Update Status</div>
+              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                {['open', 'in-progress', 'resolved'].map(s => (
+                  <Btn key={s} variant={selected.status === s ? 'primary' : 'secondary'} size="sm" onClick={() => updateQuery(selected._id, 'status', s)}>{s}</Btn>
+                ))}
+              </div>
+            </div>
+
+            <Btn variant="danger" onClick={() => deleteQuery(selected._id)} style={{ width: '100%', justifyContent: 'center' }}>
+              <FaTrash style={{ fontSize: 12 }} /> Delete Query
+            </Btn>
           </div>
-          <Btn variant="danger" onClick={() => deleteQuery(selected.id)} style={{ width: '100%', justifyContent: 'center' }}>
-            <FaTrash style={{ fontSize: 12 }} /> Delete Query
-          </Btn>
-        </Card>
-      ) : (
-        <div style={{ width: 300, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: S.textMuted, fontFamily: 'Outfit,sans-serif', gap: 10 }}>
-          <FaArrowUp style={{ fontSize: 36, color: S.textDim }} />
-          <div style={{ fontSize: 14 }}>Select a query to view details</div>
         </div>
       )}
     </div>
@@ -736,7 +702,15 @@ function BlogEditor({ blog, onSave, onCancel }) {
         <Textarea label="Short Excerpt (blog listing pe dikhega)" value={form.excerpt} onChange={e => set('excerpt', e.target.value)} placeholder="1-2 line description..." style={{ minHeight: 72 }} />
       </div>
       <div style={{ marginBottom: 16 }}>
-        <Textarea label="Full Blog Content *" value={form.content} onChange={e => set('content', e.target.value)} placeholder="Apna poora blog yahan likhein..." style={{ minHeight: 280 }} />
+        <label style={{ color: S.textMuted, fontSize: 11, fontWeight: 700, fontFamily: 'Outfit,sans-serif', textTransform: 'uppercase', letterSpacing: '0.07em', display: 'block', marginBottom: 8 }}>Full Blog Content *</label>
+        <div data-color-mode="light">
+          <MDEditor
+            value={form.content}
+            onChange={(val) => set('content', val || '')}
+            height={380}
+            preview="edit"
+          />
+        </div>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: 16, alignItems: 'end' }}>
         <Input label="Tags (comma separated)" value={typeof form.tags === 'string' ? form.tags : form.tags?.join(', ')} onChange={e => set('tags', e.target.value)} placeholder="solar, subsidy, government, UP" />
@@ -785,17 +759,46 @@ function Blogs({ blogs, setBlogs }) {
   const [search, setSearch] = useState('')
 
   const filtered = blogs.filter(b => {
-    const m = b.title.toLowerCase().includes(search.toLowerCase()) || b.category.toLowerCase().includes(search.toLowerCase())
+    const m = (b.title || '').toLowerCase().includes(search.toLowerCase()) || (b.category || '').toLowerCase().includes(search.toLowerCase())
     return m && (filter === 'all' || b.status === filter)
   })
 
-  const handleSave = data => {
-    if (editing?.id) setBlogs(prev => prev.map(b => b.id === editing.id ? { ...b, ...data } : b))
-    else setBlogs(prev => [{ ...data, id: Date.now() }, ...prev])
+  const handleSave = async data => {
+    const token = getToken()
+    if (editing?._id) {
+      const res = await fetch(`${API}/blog/${editing._id}`, {
+        method: 'PUT',
+        headers: authHeaders(),
+        body: JSON.stringify(data)
+      })
+      const json = await res.json()
+      if (json.success) setBlogs(prev => prev.map(b => b._id === editing._id ? json.data : b))
+    } else {
+      const res = await fetch(`${API}/blog/add`, {
+        method: 'POST',
+        headers: authHeaders(),
+        body: JSON.stringify(data)
+      })
+      const json = await res.json()
+      if (json.success) setBlogs(prev => [json.data, ...prev])
+    }
     setView('list'); setEditing(null)
   }
-  const deleteBlog = id => setBlogs(prev => prev.filter(b => b.id !== id))
-  const toggleStatus = id => setBlogs(prev => prev.map(b => b.id === id ? { ...b, status: b.status === 'published' ? 'draft' : 'published' } : b))
+  const deleteBlog = async id => {
+    await fetch(`${API}/blog/${id}`, { method: 'DELETE', headers: authHeaders() })
+    setBlogs(prev => prev.filter(b => b._id !== id))
+  }
+  const toggleStatus = async id => {
+    const blog = blogs.find(b => b._id === id)
+    const newStatus = blog.status === 'published' ? 'draft' : 'published'
+    const res = await fetch(`${API}/blog/${id}`, {
+      method: 'PUT',
+      headers: authHeaders(),
+      body: JSON.stringify({ status: newStatus })
+    })
+    const json = await res.json()
+    if (json.success) setBlogs(prev => prev.map(b => b._id === id ? json.data : b))
+  }
 
   if (view === 'editor') return <BlogEditor blog={editing} onSave={handleSave} onCancel={() => { setView('list'); setEditing(null) }} />
 
@@ -827,7 +830,7 @@ function Blogs({ blogs, setBlogs }) {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: 18 }}>
         {filtered.map(b => (
-          <Card key={b.id} style={{ overflow: 'hidden' }}>
+          <Card key={b._id} style={{ overflow: 'hidden' }}>
             <div style={{
               height: 130,
               background: b.image ? 'none' : 'linear-gradient(135deg, #fff7ed, #fef3c7)',
@@ -874,10 +877,10 @@ function Blogs({ blogs, setBlogs }) {
                   <Btn variant="secondary" size="sm" onClick={() => { setEditing(b); setView('editor') }}>
                     <FaEdit style={{ fontSize: 11 }} />
                   </Btn>
-                  <Btn variant={b.status === 'published' ? 'secondary' : 'success'} size="sm" onClick={() => toggleStatus(b.id)}>
+                  <Btn variant={b.status === 'published' ? 'secondary' : 'success'} size="sm" onClick={() => toggleStatus(b._id)}>
                     {b.status === 'published' ? 'Unpublish' : <><FaRocket style={{ fontSize: 11 }} /> Publish</>}
                   </Btn>
-                  <Btn variant="danger" size="sm" onClick={() => deleteBlog(b.id)}>
+                  <Btn variant="danger" size="sm" onClick={() => deleteBlog(b._id)}>
                     <FaTrash style={{ fontSize: 11 }} />
                   </Btn>
                 </div>
@@ -915,10 +918,32 @@ const NAV = [
 // ══════════════════════════════════════════════════════
 export default function DashboardLayout() {
   const [page, setPage] = useState('dashboard')
-  const [contacts, setContacts] = useState(MOCK_CONTACTS)
-  const [queries, setQueries] = useState(MOCK_QUERIES)
-  const [blogs, setBlogs] = useState(MOCK_BLOGS)
+  const [contacts, setContacts] = useState([])
+  const [queries, setQueries] = useState([])
+  const [blogs, setBlogs] = useState([])
   const [showProfile, setShowProfile] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const fetchAll = async () => {
+      try {
+        const [cRes, qRes, bRes] = await Promise.all([
+          fetch(`${API}/contact`, { headers: authHeaders() }),
+          fetch(`${API}/query`, { headers: authHeaders() }),
+          fetch(`${API}/blog`, { headers: authHeaders() }),
+        ])
+        const [cData, qData, bData] = await Promise.all([cRes.json(), qRes.json(), bRes.json()])
+        if (cData.success) setContacts(cData.data)
+        if (qData.success) setQueries(qData.data)
+        if (bData.success) setBlogs(bData.data)
+      } catch (err) {
+        console.error('Fetch error:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    fetchAll()
+  }, [])
 
   const badge = {
     contacts: contacts.filter(c => c.status === 'new').length,
@@ -927,6 +952,12 @@ export default function DashboardLayout() {
   }
 
   const currentNav = NAV.find(n => n.id === page)
+
+  if (loading) return (
+    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', fontFamily: 'Outfit,sans-serif', color: S.textMuted, fontSize: 16 }}>
+      Loading...
+    </div>
+  )
 
   return (
     <>
@@ -981,8 +1012,8 @@ export default function DashboardLayout() {
             })}
           </nav>
 
-          <div onClick={() => setShowProfile(true)} style={{ padding: '14px 16px', borderTop: `1px solid ${S.navyBorder}`, cursor: 'pointer' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <div style={{ padding: '14px 16px', borderTop: `1px solid ${S.navyBorder}`, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div onClick={() => setShowProfile(true)} style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 10 }}>
               <div style={{
                 width: 34, height: 34, borderRadius: '50%', background: S.orange,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -994,6 +1025,20 @@ export default function DashboardLayout() {
                 <div style={{ color: S.sideTextDim, fontSize: 11 }}>Super Admin</div>
               </div>
             </div>
+            <button
+              onClick={() => { localStorage.removeItem('token'); window.location.href = '/' }}
+              style={{
+                width: '100%', padding: '9px', background: 'rgba(220,38,38,0.15)',
+                border: '1px solid rgba(220,38,38,0.3)', borderRadius: 10, cursor: 'pointer',
+                display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+                fontFamily: 'Outfit,sans-serif', fontSize: 13, fontWeight: 700, color: '#f87171',
+                transition: 'all 0.15s'
+              }}
+              onMouseEnter={e => { e.currentTarget.style.background = 'rgba(220,38,38,0.28)' }}
+              onMouseLeave={e => { e.currentTarget.style.background = 'rgba(220,38,38,0.15)' }}
+            >
+              <FaSignOutAlt style={{ fontSize: 13 }} /> Logout
+            </button>
           </div>
         </div>
 

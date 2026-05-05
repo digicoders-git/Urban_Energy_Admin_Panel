@@ -49,7 +49,6 @@ export default function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -65,7 +64,7 @@ export default function AdminLogin() {
   setLoading(true);
 
   try {
-    const res = await fetch("http://localhost:5000/api/login", {
+    const res = await fetch(`${import.meta.env.VITE_API_URL}/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -77,7 +76,7 @@ export default function AdminLogin() {
 
     setLoading(false);
     if (data.success) {
-      alert(" Login Successful");
+      localStorage.setItem('token', data.token)
       navigate('/dashboard')
 
     } else {
@@ -179,26 +178,7 @@ export default function AdminLogin() {
               </div>
             </div>
 
-            {/* Remember + Forgot */}
-            <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={rememberMe}
-                  onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded border-slate-600 bg-slate-800 text-indigo-500 focus:ring-indigo-500 focus:ring-offset-slate-900 cursor-pointer"
-                />
-                <span className="text-sm text-slate-400 group-hover:text-slate-300 transition-colors">
-                  Remember me
-                </span>
-              </label>
-              <button
-                type="button"
-                className="text-sm text-indigo-400 hover:text-indigo-300 transition-colors"
-              >
-                Forgot password?
-              </button>
-            </div>
+
 
             {/* Submit */}
             <button
@@ -236,19 +216,13 @@ export default function AdminLogin() {
             </button>
           </form>
 
-          {/* Hint */}
-          <p className="mt-6 text-center text-xs text-slate-600">
-            Demo credentials:{" "}
-            <span className="text-slate-500 font-mono">admin@example.com</span>{" "}
-            /{" "}
-            <span className="text-slate-500 font-mono">admin123</span>
-          </p>
+
         </div>
 
         {/* Footer */}
         <div className="px-8 py-4 bg-slate-800/40 border-t border-slate-800 text-center">
           <p className="text-xs text-slate-600">
-            © 2026 AdminPanel · All rights reserved · v2.4.1
+            © 2026 <a href="https://digicoders.in" target="_blank" rel="noopener noreferrer" className="text-slate-500 hover:text-indigo-400 transition-colors">Digi<span className="text-indigo-400">{`{Coders}`}</span></a> · All rights reserved .
           </p>
         </div>
       </div>
