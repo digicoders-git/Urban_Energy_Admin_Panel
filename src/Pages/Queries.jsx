@@ -27,7 +27,7 @@ export default function Queries() {
 
   const filtered = data.filter(q => {
     const qr = search.toLowerCase()
-    return (q.name.toLowerCase().includes(qr) || q.city?.toLowerCase().includes(qr)) &&
+    return ((q.name?.toLowerCase() ?? '').includes(qr) || (q.city?.toLowerCase() ?? '').includes(qr)) &&
       (filter === 'All' || q.status === filter)
   })
 
@@ -108,7 +108,7 @@ export default function Queries() {
                         <div className="flex items-center gap-2.5">
                           <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0"
                             style={{ background: 'linear-gradient(135deg,#00A3E0,#00C9A7)', color: 'white' }}>
-                            {q.name[0]}
+                            {q.name?.[0] ?? '?'}
                           </div>
                           <span style={{ fontWeight: 600, color: 'white' }}>{q.name}</span>
                         </div>
@@ -149,7 +149,7 @@ export default function Queries() {
                 <div className="flex items-center gap-3">
                   <div className="w-11 h-11 rounded-full flex items-center justify-center font-bold text-base flex-shrink-0"
                     style={{ background: 'linear-gradient(135deg,#00A3E0,#00C9A7)', color: 'white' }}>
-                    {selected.name[0]}
+                    {selected.name?.[0] ?? '?'}
                   </div>
                   <div>
                     <div style={{ fontWeight: 700, fontSize: 14, color: 'white', marginBottom: 4 }}>{selected.name}</div>

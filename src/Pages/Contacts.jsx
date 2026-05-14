@@ -27,7 +27,7 @@ export default function Contacts() {
 
   const filtered = data.filter(c => {
     const q = search.toLowerCase()
-    return (c.name.toLowerCase().includes(q) || c.city?.toLowerCase().includes(q)) &&
+    return ((c.name?.toLowerCase() ?? '').includes(q) || (c.city?.toLowerCase() ?? '').includes(q)) &&
       (filter === 'All' || c.status === filter)
   })
 
@@ -108,7 +108,7 @@ export default function Contacts() {
                         <div className="flex items-center gap-2.5">
                           <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0"
                             style={{ background: 'linear-gradient(135deg,#FF7A00,#FFB800)', color: 'white' }}>
-                            {c.name[0]}
+                            {c.name?.[0] ?? '?'}
                           </div>
                           <span style={{ fontWeight: 600, color: 'white' }}>{c.name}</span>
                         </div>
@@ -147,7 +147,7 @@ export default function Contacts() {
                 <div className="flex items-center gap-3">
                   <div className="w-11 h-11 rounded-full flex items-center justify-center font-bold text-base flex-shrink-0"
                     style={{ background: 'linear-gradient(135deg,#FF7A00,#FFB800)', color: 'white' }}>
-                    {selected.name[0]}
+                    {selected.name?.[0] ?? '?'}
                   </div>
                   <div>
                     <div style={{ fontWeight: 700, fontSize: 14, color: 'white', marginBottom: 4 }}>{selected.name}</div>
