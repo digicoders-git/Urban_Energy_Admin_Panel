@@ -82,7 +82,7 @@ export default function Dashboard() {
             </div>
           </div>
           <ResponsiveContainer width="100%" height={220}>
-            <AreaChart data={stats?.chartData || []} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
+            <AreaChart data={stats?.chartData ?? []} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="cG" x1="0" y1="0" x2="0" y2="1">
                   <stop offset="5%"  stopColor="#FF7A00" stopOpacity={0.28} />
@@ -122,7 +122,7 @@ export default function Dashboard() {
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0"
                       style={{ background: 'linear-gradient(135deg,#FF7A00,#FFB800)', color: 'white' }}>
-                      {c.name[0]}
+                      {c.name?.[0] ?? '?'}
                     </div>
                     <div>
                       <div style={{ fontSize: 12.5, fontWeight: 600, color: 'white' }}>{c.name}</div>
