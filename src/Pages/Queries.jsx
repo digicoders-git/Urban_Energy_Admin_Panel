@@ -6,16 +6,16 @@ import Swal from 'sweetalert2'
 import { queriesApi } from '../api'
 
 const S = {
-  Pending:  { bg: 'rgba(255,193,7,0.12)',  color: '#FFC107', border: 'rgba(255,193,7,0.25)'  },
+  Pending: { bg: 'rgba(255,193,7,0.12)', color: '#FFC107', border: 'rgba(255,193,7,0.25)' },
   Reviewed: { bg: 'rgba(0,163,224,0.12)', color: '#00A3E0', border: 'rgba(0,163,224,0.25)' },
-  Closed:   { bg: 'rgba(0,201,167,0.12)', color: '#00C9A7', border: 'rgba(0,201,167,0.25)' },
+  Closed: { bg: 'rgba(0,201,167,0.12)', color: '#00C9A7', border: 'rgba(0,201,167,0.25)' },
 }
 
 export default function Queries() {
-  const [data, setData]         = useState([])
-  const [loading, setLoading]   = useState(true)
-  const [search, setSearch]     = useState('')
-  const [filter, setFilter]     = useState('All')
+  const [data, setData] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [search, setSearch] = useState('')
+  const [filter, setFilter] = useState('All')
   const [selected, setSelected] = useState(null)
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function Queries() {
     const result = await Swal.fire({
       title: 'Delete Query?', text: 'This action cannot be undone.', icon: 'warning',
       showCancelButton: true, confirmButtonText: 'Delete', cancelButtonText: 'Cancel',
-      background: '#0B1D51', color: '#ffffff', confirmButtonColor: '#ef4444', cancelButtonColor: 'rgba(255,255,255,0.08)',
+      background: '#ffffff', color: '#1e293b', confirmButtonColor: '#ef4444', cancelButtonColor: '#f1f5f9',
     })
     if (result.isConfirmed) {
       try {
@@ -67,7 +67,7 @@ export default function Queries() {
 
       <div className="filter-bar">
         <div className="relative" style={{ flex: '1 1 220px', maxWidth: 340 }}>
-          <Search size={14} color="rgba(255,255,255,0.28)"
+          <Search size={14} color="#94a3b8"
             style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
           <input className="input" style={{ paddingLeft: 36 }} placeholder="Search queries..."
             value={search} onChange={e => setSearch(e.target.value)} />
@@ -76,9 +76,9 @@ export default function Queries() {
           {['All', 'Pending', 'Reviewed', 'Closed'].map(f => (
             <button key={f} onClick={() => setFilter(f)} className="btn"
               style={{
-                background: filter === f ? 'linear-gradient(135deg,#FFB800,#FF7A00)' : 'rgba(255,255,255,0.06)',
-                color: filter === f ? 'white' : 'rgba(255,255,255,0.45)',
-                border: filter === f ? 'none' : '1px solid rgba(255,255,255,0.08)',
+                background: filter === f ? 'linear-gradient(135deg,#FFB800,#FF7A00)' : '#f1f5f9',
+                color: filter === f ? 'white' : '#64748b',
+                border: filter === f ? 'none' : '1px solid #e2e8f0',
                 padding: '8px 16px', fontSize: 12.5
               }}>
               {f}
@@ -96,47 +96,47 @@ export default function Queries() {
               </thead>
               <tbody>
                 {loading
-                  ? <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: 'rgba(255,255,255,0.2)' }}>Loading...</td></tr>
+                  ? <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: '#94a3b8' }}>Loading...</td></tr>
                   : filtered.length === 0
-                  ? <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: 'rgba(255,255,255,0.2)', fontSize: 13 }}>No queries found.</td></tr>
-                  : filtered.map((q, i) => (
-                    <motion.tr key={q._id}
-                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.04 }}
-                      onClick={() => setSelected(q)}
-                      style={{ cursor: 'pointer', background: selected?._id === q._id ? 'rgba(0,163,224,0.04)' : 'transparent' }}>
-                      <td>
-                        <div className="flex items-center gap-2.5">
-                          <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0"
-                            style={{ background: 'linear-gradient(135deg,#00A3E0,#00C9A7)', color: 'white' }}>
-                            {q.name?.[0] ?? '?'}
+                    ? <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: '#94a3b8', fontSize: 13 }}>No queries found.</td></tr>
+                    : filtered.map((q, i) => (
+                      <motion.tr key={q._id}
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.04 }}
+                        onClick={() => setSelected(q)}
+                        style={{ cursor: 'pointer', background: selected?._id === q._id ? 'rgba(0,163,224,0.04)' : 'transparent' }}>
+                        <td>
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0"
+                              style={{ background: 'linear-gradient(135deg,#00A3E0,#00C9A7)', color: 'white' }}>
+                              {q.name?.[0] ?? '?'}
+                            </div>
+                            <span style={{ fontWeight: 600, color: '#1e293b' }}>{q.name}</span>
                           </div>
-                          <span style={{ fontWeight: 600, color: 'white' }}>{q.name}</span>
-                        </div>
-                      </td>
-                      <td style={{ color: 'rgba(255,255,255,0.45)' }}>{q.city}</td>
-                      <td style={{ color: 'rgba(255,255,255,0.38)', maxWidth: 200 }}>
-                        <span style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{q.requirement}</span>
-                      </td>
-                      <td>
-                        <span className="badge" style={{ background: S[q.status].bg, color: S[q.status].color, border: `1px solid ${S[q.status].border}` }}>
-                          {q.status}
-                        </span>
-                      </td>
-                      <td style={{ color: 'rgba(255,255,255,0.28)', fontSize: 11.5 }}>{new Date(q.createdAt).toLocaleDateString('en-IN')}</td>
-                      <td>
-                        <div className="flex gap-1.5">
-                          <button onClick={e => { e.stopPropagation(); setSelected(q) }}
-                            style={{ background: 'rgba(0,163,224,0.1)', border: '1px solid rgba(0,163,224,0.2)', borderRadius: 7, padding: '5px 7px', cursor: 'pointer' }}>
-                            <Eye size={12} color="#00A3E0" />
-                          </button>
-                          <button onClick={e => { e.stopPropagation(); del(q._id) }}
-                            style={{ background: 'rgba(220,38,38,0.1)', border: '1px solid rgba(220,38,38,0.2)', borderRadius: 7, padding: '5px 7px', cursor: 'pointer' }}>
-                            <Trash2 size={12} color="#f87171" />
-                          </button>
-                        </div>
-                      </td>
-                    </motion.tr>
-                  ))}
+                        </td>
+                        <td style={{ color: '#64748b' }}>{q.city}</td>
+                        <td style={{ color: '#94a3b8', maxWidth: 200 }}>
+                          <span style={{ display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{q.requirement}</span>
+                        </td>
+                        <td>
+                          <span className="badge" style={{ background: S[q.status].bg, color: S[q.status].color, border: `1px solid ${S[q.status].border}` }}>
+                            {q.status}
+                          </span>
+                        </td>
+                        <td style={{ color: '#94a3b8', fontSize: 11.5 }}>{new Date(q.createdAt).toLocaleDateString('en-IN')}</td>
+                        <td>
+                          <div className="flex gap-1.5">
+                            <button onClick={e => { e.stopPropagation(); setSelected(q) }}
+                              style={{ background: 'rgba(0,163,224,0.1)', border: '1px solid rgba(0,163,224,0.2)', borderRadius: 7, padding: '5px 7px', cursor: 'pointer' }}>
+                              <Eye size={12} color="#00A3E0" />
+                            </button>
+                            <button onClick={e => { e.stopPropagation(); del(q._id) }}
+                              style={{ background: 'rgba(220,38,38,0.1)', border: '1px solid rgba(220,38,38,0.2)', borderRadius: 7, padding: '5px 7px', cursor: 'pointer' }}>
+                              <Trash2 size={12} color="#f87171" />
+                            </button>
+                          </div>
+                        </td>
+                      </motion.tr>
+                    ))}
               </tbody>
             </table>
           </div>
@@ -152,46 +152,46 @@ export default function Queries() {
                     {selected.name?.[0] ?? '?'}
                   </div>
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: 14, color: 'white', marginBottom: 4 }}>{selected.name}</div>
+                    <div style={{ fontWeight: 700, fontSize: 14, color: '#1e293b', marginBottom: 4 }}>{selected.name}</div>
                     <span className="badge" style={{ background: S[selected.status].bg, color: S[selected.status].color, border: `1px solid ${S[selected.status].border}` }}>
                       {selected.status}
                     </span>
                   </div>
                 </div>
                 <button onClick={() => setSelected(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
-                  <X size={16} color="rgba(255,255,255,0.3)" />
+                  <X size={16} color="#94a3b8" />
                 </button>
               </div>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
                 {[
-                  { Icon: Phone,  val: selected.phone },
-                  { Icon: MapPin, val: selected.city  },
+                  { Icon: Phone, val: selected.phone },
+                  { Icon: MapPin, val: selected.city },
                 ].map(({ Icon, val }, i) => val && (
                   <div key={i} className="flex items-center gap-2.5">
                     <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
                       style={{ background: 'rgba(0,163,224,0.1)', border: '1px solid rgba(0,163,224,0.18)' }}>
                       <Icon size={13} color="#00A3E0" />
                     </div>
-                    <span style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.62)' }}>{val}</span>
+                    <span style={{ fontSize: 12.5, color: '#64748b' }}>{val}</span>
                   </div>
                 ))}
               </div>
 
-              <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: '10px 12px', marginBottom: 16 }}>
-                <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.28)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 5 }}>Requirement</div>
-                <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.6)', lineHeight: 1.6 }}>{selected.requirement}</p>
+              <div style={{ background: '#f8fafc', borderRadius: 10, padding: '10px 12px', marginBottom: 16 }}>
+                <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 5 }}>Requirement</div>
+                <p style={{ fontSize: 12.5, color: '#64748b', lineHeight: 1.6 }}>{selected.requirement}</p>
               </div>
 
-              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.28)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Update Status</div>
+              <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Update Status</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {['Pending', 'Reviewed', 'Closed'].map(s => (
                   <button key={s} onClick={() => setStatus(selected._id, s)}
                     style={{
                       padding: '8px 12px', borderRadius: 9, fontSize: 12.5, fontWeight: 600, cursor: 'pointer', textAlign: 'left',
-                      background: selected.status === s ? S[s].bg : 'rgba(255,255,255,0.04)',
-                      color: selected.status === s ? S[s].color : 'rgba(255,255,255,0.38)',
-                      border: selected.status === s ? `1px solid ${S[s].border}` : '1px solid rgba(255,255,255,0.06)',
+                      background: selected.status === s ? S[s].bg : '#f8fafc',
+                      color: selected.status === s ? S[s].color : '#64748b',
+                      border: selected.status === s ? `1px solid ${S[s].border}` : '1px solid #e2e8f0',
                       transition: 'all 0.15s'
                     }}>
                     {s}
@@ -200,13 +200,23 @@ export default function Queries() {
               </div>
             </motion.div>
           ) : (
-            <div style={{ textAlign: 'center', padding: '52px 16px', color: 'rgba(255,255,255,0.18)', fontSize: 13 }}>
-              <Zap size={30} color="rgba(255,255,255,0.07)" style={{ margin: '0 auto 10px' }} />
+            <div style={{ textAlign: 'center', padding: '52px 16px', color: '#cbd5e1', fontSize: 13 }}>
+              <Zap size={30} color="#e2e8f0" style={{ margin: '0 auto 10px' }} />
               Select a query to view details
             </div>
           )}
         </div>
       </div>
     </div>
+  )
+}
+<div style={{ textAlign: 'center', padding: '52px 16px', color: 'rgba(255,255,255,0.18)', fontSize: 13 }}>
+  <Zap size={30} color="rgba(255,255,255,0.07)" style={{ margin: '0 auto 10px' }} />
+  Select a query to view details
+</div>
+          )}
+        </div >
+      </div >
+    </div >
   )
 }

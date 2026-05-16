@@ -8,11 +8,11 @@ import Logo from '/urbanlogo.png'
 
 export default function Login() {
   const { login } = useAuth()
-  const navigate  = useNavigate()
-  const [form, setForm]         = useState({ username: '', password: '' })
+  const navigate = useNavigate()
+  const [form, setForm] = useState({ username: '', password: '' })
   const [showPass, setShowPass] = useState(false)
-  const [loading, setLoading]   = useState(false)
-  const [focused, setFocused]   = useState('')
+  const [loading, setLoading] = useState(false)
+  const [focused, setFocused] = useState('')
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -47,7 +47,7 @@ export default function Login() {
           </div>
           <div>
             <div className="font-orbitron font-black text-white" style={{ fontSize: 16, lineHeight: 1 }}>
-              Urban <span className="glow-text">Energy</span>
+              Vaulix <span className="glow-text">Solar</span>
             </div>
             <div style={{ fontSize: 9, color: 'rgba(255,255,255,0.28)', fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase', marginTop: 3 }}>
               Admin Panel

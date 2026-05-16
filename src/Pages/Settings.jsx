@@ -7,11 +7,11 @@ import { useAuth } from '../context/AuthContext'
 import { authApi } from '../api'
 
 const CONTACT_FIELDS = [
-  { key: 'phone',    label: 'Phone Number',    Icon: Phone,  placeholder: '+91 98000 12345',         type: 'text'  },
-  { key: 'email',    label: 'Email Address',   Icon: Mail,   placeholder: 'hello@urbanenergy.in',    type: 'email' },
-  { key: 'address',  label: 'Office Address',  Icon: MapPin, placeholder: 'City, State – PIN',       type: 'text'  },
-  { key: 'whatsapp', label: 'WhatsApp Number', Icon: Phone,  placeholder: '919800012345',             type: 'text'  },
-  { key: 'apiUrl',   label: 'Backend API URL', Icon: Globe,  placeholder: 'https://api.example.com', type: 'url'   },
+  { key: 'phone', label: 'Phone Number', Icon: Phone, placeholder: '+91 98000 12345', type: 'text' },
+  { key: 'email', label: 'Email Address', Icon: Mail, placeholder: 'hello@vaulixsolar.in', type: 'email' },
+  { key: 'address', label: 'Office Address', Icon: MapPin, placeholder: 'City, State – PIN', type: 'text' },
+  { key: 'whatsapp', label: 'WhatsApp Number', Icon: Phone, placeholder: '919800012345', type: 'text' },
+  { key: 'apiUrl', label: 'Backend API URL', Icon: Globe, placeholder: 'https://api.example.com', type: 'url' },
 ]
 
 const Label = ({ children }) => (
@@ -34,19 +34,19 @@ export default function Settings() {
   const [editing, setEditing] = useState(false)
 
   const [profileForm, setProfileForm] = useState({
-    name:    profile.name    || '',
-    mobile:  profile.mobile  || '',
+    name: profile.name || '',
+    mobile: profile.mobile || '',
     address: profile.address || '',
-    role:    profile.role    || '',
-    avatar:  profile.avatar  || null,
+    role: profile.role || '',
+    avatar: profile.avatar || null,
   })
 
   const [siteForm, setSiteForm] = useState({
-    phone:    '+91 98000 12345',
-    email:    'hello@urbanenergy.in',
-    address:  'Lucknow, Uttar Pradesh – 226001',
+    phone: '+91 98000 12345',
+    email: 'hello@vaulixsolar.in',
+    address: 'Lucknow, Uttar Pradesh – 226001',
     whatsapp: '919800012345',
-    apiUrl:   'https://api.urbanenergy.in',
+    apiUrl: 'https://api.vaulixsolar.in',
   })
 
   const [passForm, setPassForm] = useState({ current: '', newPass: '', confirm: '' })
@@ -75,11 +75,11 @@ export default function Settings() {
 
   const cancelEdit = () => {
     setProfileForm({
-      name:    profile.name    || '',
-      mobile:  profile.mobile  || '',
+      name: profile.name || '',
+      mobile: profile.mobile || '',
       address: profile.address || '',
-      role:    profile.role    || '',
-      avatar:  profile.avatar  || null,
+      role: profile.role || '',
+      avatar: profile.avatar || null,
     })
     setEditing(false)
   }
@@ -167,10 +167,10 @@ export default function Settings() {
             <div style={{ position: 'relative', flexShrink: 0 }}>
               {profileForm.avatar
                 ? <img src={profileForm.avatar} alt="avatar"
-                    style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(255,122,0,0.4)' }} />
+                  style={{ width: 72, height: 72, borderRadius: '50%', objectFit: 'cover', border: '2px solid rgba(255,122,0,0.4)' }} />
                 : <div style={{ width: 72, height: 72, borderRadius: '50%', background: 'linear-gradient(135deg,#FF7A00,#FFB800)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 26, fontWeight: 900, color: 'white', border: '2px solid rgba(255,122,0,0.4)' }}>
-                    {profileForm.name?.[0]?.toUpperCase() || 'A'}
-                  </div>
+                  {profileForm.name?.[0]?.toUpperCase() || 'A'}
+                </div>
               }
               {editing && (
                 <button onClick={() => avatarRef.current.click()}
@@ -195,10 +195,10 @@ export default function Settings() {
           {/* Profile Fields */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             {[
-              { key: 'name',    label: 'Full Name',         Icon: User,     placeholder: 'Your full name',     type: 'text' },
-              { key: 'mobile',  label: 'Mobile Number',     Icon: Phone,    placeholder: '+91 98000 00000',    type: 'tel'  },
-              { key: 'address', label: 'Address',           Icon: MapPin,   placeholder: 'Your address',       type: 'text' },
-              { key: 'role',    label: 'Role / Designation',Icon: Briefcase,placeholder: 'e.g. Super Admin',   type: 'text' },
+              { key: 'name', label: 'Full Name', Icon: User, placeholder: 'Your full name', type: 'text' },
+              { key: 'mobile', label: 'Mobile Number', Icon: Phone, placeholder: '+91 98000 00000', type: 'tel' },
+              { key: 'address', label: 'Address', Icon: MapPin, placeholder: 'Your address', type: 'text' },
+              { key: 'role', label: 'Role / Designation', Icon: Briefcase, placeholder: 'e.g. Super Admin', type: 'text' },
             ].map(({ key, label, Icon, placeholder, type }) => (
               <div key={key}>
                 <Label>{label}</Label>
@@ -236,8 +236,8 @@ export default function Settings() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             {[
               { key: 'current', label: 'Current Password', placeholder: 'Enter current password' },
-              { key: 'newPass', label: 'New Password',     placeholder: 'Enter new password'     },
-              { key: 'confirm', label: 'Confirm Password', placeholder: 'Confirm new password'   },
+              { key: 'newPass', label: 'New Password', placeholder: 'Enter new password' },
+              { key: 'confirm', label: 'Confirm Password', placeholder: 'Confirm new password' },
             ].map(({ key, label, placeholder }) => (
               <div key={key}>
                 <Label>{label}</Label>
