@@ -212,13 +212,3 @@ export default function Contacts() {
     </div>
   )
 }
-<div style={{ textAlign: 'center', padding: '52px 16px', color: 'rgba(255,255,255,0.18)', fontSize: 13 }}>
-  <Eye size={30} color="rgba(255,255,255,0.07)" style={{ margin: '0 auto 10px' }} />
-  Select a contact to view details
-</div>
-          )}
-        </div >
-      </div >
-    </div >
-  )
-}
