@@ -33,17 +33,17 @@ function SidebarContent({ onClose }) {
   return (
     <div className="flex flex-col h-full" style={{ padding: '20px 14px' }}>
       {/* Brand */}
-      <div className="flex flex-col items-end mb-3 px-2" style={{ position: 'relative' }}>
+      <div className="flex flex-col items-end mb-2 px-2" style={{ position: 'relative' }}>
         {onClose && (
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, position: 'absolute', top: 0, right: 0 }}>
             <X size={18} color="var(--text-dim)" />
           </button>
         )}
-        <img src={Logo} alt="Vaulix Solar" className="w-32 h-32 object-contain" style={{ marginRight: '60px' }} />
+        <img src={Logo} alt="Vaulix Solar" className="w-20 h-20 object-contain" />
       </div>
 
       {/* Nav */}
-      <nav className="flex flex-col gap-5 flex-1">
+      <nav className="flex flex-col gap-5" style={{ flex: 1, overflowY: 'auto' }}>
         {NAV.map(({ to, icon: Icon, label }) => (
           <NavLink
             key={to}
@@ -58,28 +58,28 @@ function SidebarContent({ onClose }) {
       </nav>
 
       {/* User */}
-      <div style={{ borderTop: '1px solid var(--border-card)', paddingTop: 14, marginTop: 14 }}>
-        <div className="flex items-center gap-3 px-2 mb-3">
+      <div style={{ borderTop: '1px solid var(--border-card)', paddingTop: 12, marginTop: 'auto' }}>
+        <div className="flex items-center gap-3 px-2 mb-2">
           {profile?.avatar
-            ? <img src={profile.avatar} alt="" style={{ width: 36, height: 36, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--orange)', flexShrink: 0 }} />
-            : <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
+            ? <img src={profile.avatar} alt="" style={{ width: 32, height: 32, borderRadius: '50%', objectFit: 'cover', border: '2px solid var(--orange)', flexShrink: 0 }} />
+            : <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
               style={{ background: 'linear-gradient(135deg, #FF7A00, #FFB800)', color: 'white' }}>
               {(profile?.name || user?.username)?.[0]?.toUpperCase()}
             </div>
           }
           <div className="min-w-0">
-            <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-main)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+            <div style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--text-main)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {profile?.name || user?.username}
             </div>
-            <div style={{ fontSize: 11, color: 'var(--text-dim)' }}>{profile?.role || user?.role}</div>
+            <div style={{ fontSize: 10.5, color: 'var(--text-dim)' }}>{profile?.role || user?.role}</div>
           </div>
         </div>
         <button
           onClick={handleLogout}
           className="nav-link w-full"
-          style={{ color: '#ef4444', border: 'none', background: 'none' }}
+          style={{ color: '#ef4444', border: 'none', background: 'none', padding: '6px 12px', fontSize: 12.5 }}
         >
-          <LogOut size={16} />
+          <LogOut size={14} />
           Logout
         </button>
       </div>
