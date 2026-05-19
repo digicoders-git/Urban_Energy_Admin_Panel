@@ -13,6 +13,7 @@ import Settings from './Pages/Settings'
 import Partners from './Pages/Partners'
 import GetQuotes from './Pages/GetQuotes'
 import Reviews from './Pages/Reviews'
+import Applications from './Pages/Applications'
 
 
 function Guard({ children }) {
@@ -40,6 +41,7 @@ function AppRoutes() {
       <Route path="/partners" element={<Guard><Layout><Partners /></Layout></Guard>} />
       <Route path="/get-quotes" element={<Guard><Layout><GetQuotes /></Layout></Guard>} />
       <Route path="/reviews" element={<Guard><Layout><Reviews /></Layout></Guard>} />
+      <Route path="/applications" element={<Guard><Layout><Applications /></Layout></Guard>} />
       <Route path="/settings" element={<Guard><Layout><Settings /></Layout></Guard>} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>

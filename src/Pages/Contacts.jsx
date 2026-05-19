@@ -76,9 +76,9 @@ export default function Contacts() {
           {['All', 'New', 'Contacted', 'Converted'].map(f => (
             <button key={f} onClick={() => setFilter(f)} className="btn"
               style={{
-                background: filter === f ? 'linear-gradient(135deg,#FFB800,#FF7A00)' : '#f1f5f9',
-                color: filter === f ? 'white' : '#64748b',
-                border: filter === f ? 'none' : '1px solid #e2e8f0',
+                background: filter === f ? 'linear-gradient(135deg,#FFB800,#FF7A00)' : 'rgba(255,255,255,0.06)',
+                color: filter === f ? 'white' : 'rgba(255,255,255,0.5)',
+                border: filter === f ? 'none' : '1px solid rgba(255,255,255,0.1)',
                 padding: '8px 16px', fontSize: 12.5
               }}>
               {f}
@@ -92,13 +92,19 @@ export default function Contacts() {
           <div style={{ overflowX: 'auto' }}>
             <table className="tbl">
               <thead>
-                <tr><th>Name</th><th>City</th><th>Bill/mo</th><th>Status</th><th>Date</th><th></th></tr>
+                <tr>
+                  <th>Name</th>
+                  <th>City</th>
+                  <th>Bill/mo</th>
+                  <th>Status</th>
+                  <th>Date</th>
+                  <th></th></tr>
               </thead>
               <tbody>
                 {loading
-                  ? <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: '#94a3b8' }}>Loading...</td></tr>
+                  ? <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: 'rgba(255,255,255,0.4)' }}>Loading...</td></tr>
                   : filtered.length === 0
-                    ? <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: '#94a3b8', fontSize: 13 }}>No contacts found.</td></tr>
+                    ? <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>No contacts found.</td></tr>
                     : filtered.map((c, i) => (
                       <motion.tr key={c._id}
                         initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.04 }}
@@ -110,17 +116,17 @@ export default function Contacts() {
                               style={{ background: 'linear-gradient(135deg,#FF7A00,#FFB800)', color: 'white' }}>
                               {c.name?.[0] ?? '?'}
                             </div>
-                            <span style={{ fontWeight: 600, color: '#1e293b' }}>{c.name}</span>
+                            <span style={{ fontWeight: 600, color: '#ffffff' }}>{c.name}</span>
                           </div>
                         </td>
-                        <td style={{ color: '#64748b' }}>{c.city}</td>
+                        <td style={{ color: 'rgba(255,255,255,0.6)' }}>{c.city}</td>
                         <td style={{ color: '#FFB800', fontWeight: 700 }}>₹{c.bill?.toLocaleString('en-IN')}</td>
                         <td>
                           <span className="badge" style={{ background: S[c.status].bg, color: S[c.status].color, border: `1px solid ${S[c.status].border}` }}>
                             {c.status}
                           </span>
                         </td>
-                        <td style={{ color: '#94a3b8', fontSize: 11.5 }}>{new Date(c.createdAt).toLocaleDateString('en-IN')}</td>
+                        <td style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11.5 }}>{new Date(c.createdAt).toLocaleDateString('en-IN')}</td>
                         <td>
                           <div className="flex gap-1.5">
                             <button onClick={e => { e.stopPropagation(); setSelected(c) }}
@@ -150,7 +156,7 @@ export default function Contacts() {
                     {selected.name?.[0] ?? '?'}
                   </div>
                   <div>
-                    <div style={{ fontWeight: 700, fontSize: 14, color: '#1e293b', marginBottom: 4 }}>{selected.name}</div>
+                    <div style={{ fontWeight: 700, fontSize: 14, color: '#ffffff', marginBottom: 4 }}>{selected.name}</div>
                     <span className="badge" style={{ background: S[selected.status].bg, color: S[selected.status].color, border: `1px solid ${S[selected.status].border}` }}>
                       {selected.status}
                     </span>
@@ -173,27 +179,27 @@ export default function Contacts() {
                       style={{ background: 'rgba(255,122,0,0.1)', border: '1px solid rgba(255,122,0,0.18)' }}>
                       <Icon size={13} color="#FF7A00" />
                     </div>
-                    <span style={{ fontSize: 12.5, color: '#64748b' }}>{val}</span>
+                    <span style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.6)' }}>{val}</span>
                   </div>
                 ))}
               </div>
 
               {selected.message && (
-                <div style={{ background: '#f8fafc', borderRadius: 10, padding: '10px 12px', marginBottom: 16 }}>
-                  <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 5 }}>Message</div>
-                  <p style={{ fontSize: 12.5, color: '#64748b', lineHeight: 1.55 }}>{selected.message}</p>
+                <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 10, padding: '10px 12px', marginBottom: 16 }}>
+                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 5 }}>Message</div>
+                  <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.6)', lineHeight: 1.55 }}>{selected.message}</p>
                 </div>
               )}
 
-              <div style={{ fontSize: 10, color: '#94a3b8', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Update Status</div>
+              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Update Status</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 {['New', 'Contacted', 'Converted'].map(s => (
                   <button key={s} onClick={() => setStatus(selected._id, s)}
                     style={{
                       padding: '8px 12px', borderRadius: 9, fontSize: 12.5, fontWeight: 600, cursor: 'pointer', textAlign: 'left',
-                      background: selected.status === s ? S[s].bg : '#f8fafc',
-                      color: selected.status === s ? S[s].color : '#64748b',
-                      border: selected.status === s ? `1px solid ${S[s].border}` : '1px solid #e2e8f0',
+                      background: selected.status === s ? S[s].bg : 'rgba(255,255,255,0.05)',
+                      color: selected.status === s ? S[s].color : 'rgba(255,255,255,0.6)',
+                      border: selected.status === s ? `1px solid ${S[s].border}` : '1px solid rgba(255,255,255,0.1)',
                       transition: 'all 0.15s'
                     }}>
                     {s}
@@ -202,8 +208,8 @@ export default function Contacts() {
               </div>
             </motion.div>
           ) : (
-            <div style={{ textAlign: 'center', padding: '52px 16px', color: '#cbd5e1', fontSize: 13 }}>
-              <Eye size={30} color="#e2e8f0" style={{ margin: '0 auto 10px' }} />
+            <div style={{ textAlign: 'center', padding: '52px 16px', color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>
+              <Eye size={30} color="rgba(255,255,255,0.2)" style={{ margin: '0 auto 10px' }} />
               Select a contact to view details
             </div>
           )}

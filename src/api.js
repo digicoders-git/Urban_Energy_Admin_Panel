@@ -69,6 +69,13 @@ export const reviewsApi = {
   delete:      (id)           => del(`/reviews/${id}`),
 }
 
+export const applicationsApi = {
+  getAll:      ()              => get('/applications'),
+  updateStatus:(id, status)   => patch(`/applications/${id}/status`, { status }),
+  delete:      (id)           => del(`/applications/${id}`),
+  downloadCv:  (id)           => `${BASE}/applications/${id}/cv`,
+}
+
 export const notificationsApi = {
   getAll:     () => get('/notifications'),
   markRead:   (id) => patch(`/notifications/${id}/read`, {}),

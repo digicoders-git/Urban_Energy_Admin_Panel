@@ -327,6 +327,7 @@ select.input option {
   padding: 12px 16px;
   font-size: 13px;
   vertical-align: middle;
+  color: var(--text-main);
 }
 
 /* ── Section Label ── */
