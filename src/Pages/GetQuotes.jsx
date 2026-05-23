@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react'
-import { HandCoins, Trash2, Eye, X, Phone, Mail, MapPin, Zap, ChevronLeft, ChevronRight } from 'lucide-react'
+import { HandCoins, Trash2, Eye, X, Phone, Mail, MapPin, Zap, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react'
 import { toast } from 'react-toastify'
 import Swal from 'sweetalert2'
 import { quotesApi } from '../api'
+import LandscapeModal from '../components/LandscapeModal'
 
 const S = {
   new: { bg: 'rgba(0,163,224,0.12)', color: '#00A3E0', border: 'rgba(0,163,224,0.25)', label: 'New' },
@@ -17,6 +18,7 @@ export default function GetQuotes() {
   const [filter, setFilter] = useState('all')
   const [page, setPage] = useState(1)
   const [selected, setSelected] = useState(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     quotesApi.getAll()
@@ -93,97 +95,60 @@ export default function GetQuotes() {
         ))}
       </div>
 
-      <div className="split">
-        <div className="glass" style={{ overflow: 'hidden' }}>
-          <div style={{ overflowX: 'auto' }}>
-            <table className="tbl">
-              <thead><tr><th>Name</th><th>Type</th><th>Size</th><th>City</th><th>Date</th><th>Status</th><th></th></tr></thead>
-              <tbody>
-                {loading
-                  ? <tr><td colSpan={7} style={{ textAlign: 'center', padding: 40, color: 'rgba(255,255,255,0.4)' }}>Loading...</td></tr>
-                  : paginated.length === 0
-                    ? <tr><td colSpan={7} style={{ textAlign: 'center', padding: 40, color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>No records found.</td></tr>
-                    : paginated.map((row) => {
-                      const s = S[row.status]
-                      return (
-                        <tr key={row._id} onClick={() => setSelected(row)} style={{ cursor: 'pointer', background: selected?._id === row._id ? 'rgba(255,122,0,0.04)' : 'transparent' }}>
-                          <td>
-                            <div style={{ fontWeight: 700, color: '#ffffff', fontSize: 13 }}>{row.name}</div>
-                            <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 2 }}>{row.phone}</div>
-                          </td>
-                          <td><span className="badge" style={{ background: 'rgba(255,122,0,0.12)', color: '#FF7A00', border: '1px solid rgba(255,122,0,0.2)' }}>{row.type}</span></td>
-                          <td style={{ color: '#ffffff', fontWeight: 700, fontSize: 13 }}>{row.systemSize}</td>
-                          <td style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>{row.city}</td>
-                          <td style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12 }}>{new Date(row.createdAt).toLocaleDateString('en-IN')}</td>
-                          <td><span className="badge" style={{ background: s.bg, color: s.color, border: `1px solid ${s.border}` }}>{s.label}</span></td>
-                          <td>
-                            <div style={{ display: 'flex', gap: 5 }} onClick={e => e.stopPropagation()}>
-                              <button onClick={() => setSelected(row)} style={{ background: 'rgba(0,163,224,0.1)', border: '1px solid rgba(0,163,224,0.2)', borderRadius: 7, padding: '5px 7px', cursor: 'pointer' }}><Eye size={12} color="#00A3E0" /></button>
-                              <button onClick={() => remove(row._id)} style={{ background: 'rgba(220,38,38,0.1)', border: '1px solid rgba(220,38,38,0.2)', borderRadius: 7, padding: '5px 7px', cursor: 'pointer' }}><Trash2 size={12} color="#f87171" /></button>
-                            </div>
-                          </td>
-                        </tr>
-                      )
-                    })}
-              </tbody>
-            </table>
+      <div className="glass" style={{ overflow: 'hidden' }}>
+        <div style={{ overflowX: 'auto' }}>
+          <table className="tbl">
+            <thead><tr><th>Name</th><th>Type</th><th>Size</th><th>City</th><th>Date</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              {loading
+                ? <tr><td colSpan={7} style={{ textAlign: 'center', padding: 40, color: 'rgba(255,255,255,0.4)' }}>Loading...</td></tr>
+                : paginated.length === 0
+                  ? <tr><td colSpan={7} style={{ textAlign: 'center', padding: 40, color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>No records found.</td></tr>
+                  : paginated.map((row) => {
+                    const s = S[row.status]
+                    return (
+                      <tr key={row._id} onClick={() => { setSelected(row); setIsModalOpen(true); }} style={{ cursor: 'pointer' }}>
+                        <td>
+                          <div style={{ fontWeight: 700, color: '#ffffff', fontSize: 13 }}>{row.name}</div>
+                          <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 2 }}>{row.phone}</div>
+                        </td>
+                        <td><span className="badge" style={{ background: 'rgba(255,122,0,0.12)', color: '#FF7A00', border: '1px solid rgba(255,122,0,0.2)' }}>{row.type}</span></td>
+                        <td style={{ color: '#ffffff', fontWeight: 700, fontSize: 13 }}>{row.systemSize}</td>
+                        <td style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>{row.city}</td>
+                        <td style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12 }}>{new Date(row.createdAt).toLocaleDateString('en-IN')}</td>
+                        <td><span className="badge" style={{ background: s.bg, color: s.color, border: `1px solid ${s.border}` }}>{s.label}</span></td>
+                        <td>
+                          <div style={{ display: 'flex', gap: 5, justifyContent: 'end' }} onClick={e => e.stopPropagation()}>
+                            <button onClick={() => { setSelected(row); setIsModalOpen(true); }} style={{ background: 'rgba(0,163,224,0.1)', border: '1px solid rgba(0,163,224,0.2)', borderRadius: 7, padding: '5px 7px', cursor: 'pointer' }}><Eye size={12} color="#00A3E0" /></button>
+                            <button onClick={() => remove(row._id)} style={{ background: 'rgba(220,38,38,0.1)', border: '1px solid rgba(220,38,38,0.2)', borderRadius: 7, padding: '5px 7px', cursor: 'pointer' }}><Trash2 size={12} color="#f87171" /></button>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })}
+            </tbody>
+          </table>
+        </div>
+        {totalPages > 1 && (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderTop: '1px solid var(--border-card)' }}>
+            <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12 }}>Showing {(page - 1) * PER_PAGE + 1}–{Math.min(page * PER_PAGE, filtered.length)} of {filtered.length}</span>
+            <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+              <button onClick={() => changePage(page - 1)} disabled={page === 1} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '5px 8px', cursor: page === 1 ? 'not-allowed' : 'pointer', color: page === 1 ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.6)' }}><ChevronLeft size={14} /></button>
+              {[...Array(totalPages)].map((_, i) => <button key={i} onClick={() => changePage(i + 1)} style={{ width: 30, height: 30, borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 700, background: page === i + 1 ? 'linear-gradient(135deg,#FFB800,#FF7A00)' : 'rgba(255,255,255,0.06)', color: page === i + 1 ? 'white' : 'rgba(255,255,255,0.5)' }}>{i + 1}</button>)}
+              <button onClick={() => changePage(page + 1)} disabled={page === totalPages} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '5px 8px', cursor: page === totalPages ? 'not-allowed' : 'pointer', color: page === totalPages ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.6)' }}><ChevronRight size={14} /></button>
+            </div>
           </div>
-          {totalPages > 1 && (
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderTop: '1px solid var(--border-card)' }}>
-              <span style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12 }}>Showing {(page - 1) * PER_PAGE + 1}–{Math.min(page * PER_PAGE, filtered.length)} of {filtered.length}</span>
-              <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-                <button onClick={() => changePage(page - 1)} disabled={page === 1} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '5px 8px', cursor: page === 1 ? 'not-allowed' : 'pointer', color: page === 1 ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.6)' }}><ChevronLeft size={14} /></button>
-                {[...Array(totalPages)].map((_, i) => <button key={i} onClick={() => changePage(i + 1)} style={{ width: 30, height: 30, borderRadius: 8, border: 'none', cursor: 'pointer', fontSize: 12, fontWeight: 700, background: page === i + 1 ? 'linear-gradient(135deg,#FFB800,#FF7A00)' : 'rgba(255,255,255,0.06)', color: page === i + 1 ? 'white' : 'rgba(255,255,255,0.5)' }}>{i + 1}</button>)}
-                <button onClick={() => changePage(page + 1)} disabled={page === totalPages} style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 8, padding: '5px 8px', cursor: page === totalPages ? 'not-allowed' : 'pointer', color: page === totalPages ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.6)' }}><ChevronRight size={14} /></button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        <div className="glass" style={{ padding: 18, position: 'sticky', top: 0 }}>
-          {selected ? (
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <div style={{ fontWeight: 700, color: '#ffffff', fontSize: 14 }}>{selected.name}</div>
-                <button onClick={() => setSelected(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}><X size={15} color="var(--text-dim)" /></button>
-              </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 14 }}>
-                {[
-                  { Icon: Mail, val: selected.email },
-                  { Icon: Phone, val: selected.phone },
-                  { Icon: MapPin, val: selected.city },
-                  { Icon: Zap, val: `${selected.systemSize} — ${selected.type}` },
-                ].map(({ Icon, val }, i) => val && (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                    <div style={{ width: 28, height: 28, borderRadius: 8, background: 'rgba(255,122,0,0.1)', border: '1px solid rgba(255,122,0,0.18)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}><Icon size={13} color="#FF7A00" /></div>
-                    <span style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.6)' }}>{val}</span>
-                  </div>
-                ))}
-              </div>
-              {selected.message && (
-                <div style={{ background: 'rgba(255,255,255,0.05)', borderRadius: 10, padding: '10px 12px', marginBottom: 14 }}>
-                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 5 }}>Message</div>
-                  <p style={{ fontSize: 12.5, color: 'rgba(255,255,255,0.6)', lineHeight: 1.55, margin: 0 }}>{selected.message}</p>
-                </div>
-              )}
-              <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Update Status</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                {['new', 'contacted', 'closed'].map(st => (
-                  <button key={st} onClick={() => updateStatus(selected._id, st)}
-                    style={{ padding: '8px 12px', borderRadius: 9, fontSize: 12.5, fontWeight: 600, cursor: 'pointer', textAlign: 'left', textTransform: 'capitalize', background: selected.status === st ? S[st].bg : 'rgba(255,255,255,0.05)', color: selected.status === st ? S[st].color : 'rgba(255,255,255,0.6)', border: selected.status === st ? `1px solid ${S[st].border}` : '1px solid rgba(255,255,255,0.1)' }}>
-                    {st}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div style={{ textAlign: 'center', padding: '52px 16px', color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>
-              <Eye size={30} color="rgba(255,255,255,0.2)" style={{ margin: '0 auto 10px' }} />
-              Select a quote to view details
-            </div>
-          )}
-        </div>
+        )}
       </div>
+
+      <LandscapeModal
+        isOpen={isModalOpen}
+        onClose={() => { setIsModalOpen(false); setSelected(null); }}
+        type="quote"
+        data={selected}
+        statusStyles={S}
+        onStatusUpdate={updateStatus}
+      />
     </div>
   )
 }

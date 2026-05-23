@@ -86,3 +86,12 @@ export const dashboardApi = {
   stats:          () => get('/dashboard/stats'),
   recentContacts: () => get('/dashboard/recent-contacts'),
 }
+
+export const referralsApi = {
+  getAll:                 ()              => get('/referrals'),
+  updateStatus:           (id, status)    => patch(`/referrals/${id}/status`, { status }),
+  updateCommission:       (id, commission)=> patch(`/referrals/${id}/commission`, { commission }),
+  delete:                 (id)            => del(`/referrals/${id}`),
+  getCommissionConfig:    ()              => get('/referrals/commission-config'),
+  updateCommissionConfig: (body)          => put('/referrals/commission-config', body),
+}

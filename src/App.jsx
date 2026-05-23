@@ -14,6 +14,7 @@ import Partners from './Pages/Partners'
 import GetQuotes from './Pages/GetQuotes'
 import Reviews from './Pages/Reviews'
 import Applications from './Pages/Applications'
+import Referrals from './Pages/Referrals'
 
 
 function Guard({ children }) {
@@ -39,6 +40,7 @@ function AppRoutes() {
       <Route path="/queries" element={<Guard><Layout><Queries /></Layout></Guard>} />
       <Route path="/blogs" element={<Guard><Layout><Blogs /></Layout></Guard>} />
       <Route path="/partners" element={<Guard><Layout><Partners /></Layout></Guard>} />
+      <Route path="/referrals" element={<Guard><Layout><Referrals /></Layout></Guard>} />
       <Route path="/get-quotes" element={<Guard><Layout><GetQuotes /></Layout></Guard>} />
       <Route path="/reviews" element={<Guard><Layout><Reviews /></Layout></Guard>} />
       <Route path="/applications" element={<Guard><Layout><Applications /></Layout></Guard>} />

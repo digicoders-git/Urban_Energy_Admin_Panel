@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Users, MessageSquare, TrendingUp, HandCoins, ArrowUpRight } from 'lucide-react'
+import { Users, MessageSquare, TrendingUp, HandCoins, ArrowUpRight, Gift } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { dashboardApi } from '../api'
 
@@ -34,8 +34,9 @@ export default function Dashboard() {
   const STATS = stats ? [
     { label: 'Total Contacts', value: stats.totalContacts, icon: Users, color: '#FF7A00' },
     { label: 'Total Queries', value: stats.totalQueries, icon: MessageSquare, color: '#00A3E0' },
-    { label: 'Conversions', value: stats.conversions, icon: TrendingUp, color: '#00C9A7' },
     { label: 'Quote Requests', value: stats.totalQuotes, icon: HandCoins, color: '#FFB800' },
+    { label: 'Conversions', value: stats.conversions, icon: TrendingUp, color: '#00C9A7' },
+    { label: 'Total Referrals', value: stats.totalReferrals || 0, icon: Gift, color: '#10B981' },
   ] : []
 
   if (loading) return (
@@ -46,10 +47,10 @@ export default function Dashboard() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div className="grid-4">
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: 16 }}>
         {STATS.map((s, i) => (
           <motion.div key={s.label} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }}
-            className="glass" style={{ padding: '20px', display: 'flex', flexDirection: 'column' }}>
+            className="glass stat-card" style={{ padding: '20px', display: 'flex', flexDirection: 'column' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
               <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `${s.color}15`, border: `1px solid ${s.color}28` }}>
                 <s.icon size={18} color={s.color} />

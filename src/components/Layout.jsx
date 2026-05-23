@@ -3,7 +3,7 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, Users, MessageSquare, FileText,
-  Settings, LogOut, Menu, X, Bell, Handshake, HandCoins, Star, BriefcaseBusiness
+  Settings, LogOut, Menu, X, Bell, Handshake, HandCoins, Star, BriefcaseBusiness, Gift
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { notificationsApi } from '../api'
@@ -15,6 +15,7 @@ const NAV = [
   { to: '/queries', icon: MessageSquare, label: 'Queries' },
   { to: '/get-quotes', icon: HandCoins, label: 'Get Quotes' },
   { to: '/partners', icon: Handshake, label: 'Partners' },
+  { to: '/referrals', icon: Gift, label: 'Referrals' },
   { to: '/reviews', icon: Star, label: 'Reviews' },
   { to: '/applications', icon: BriefcaseBusiness, label: 'Applications' },
   { to: '/blogs', icon: FileText, label: 'Blogs' },
@@ -33,7 +34,7 @@ function SidebarContent({ onClose }) {
   return (
     <div className="flex flex-col h-full" style={{ padding: '20px 14px' }}>
       {/* Brand */}
-      <div className="flex flex-col items-end mb-2 px-2" style={{ position: 'relative' }}>
+      <div className="flex flex-col items-start mb-2 px-3" style={{ position: 'relative', width: '100%' }}>
         {onClose && (
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, position: 'absolute', top: 0, right: 0 }}>
             <X size={18} color="var(--text-dim)" />
