@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import { Search, Trash2, Eye, Phone, Mail, Briefcase, Download, X, FileText, Maximize2 } from 'lucide-react'
 import { toast } from 'react-toastify'
 import Swal from 'sweetalert2'
 import { applicationsApi } from '../api'
-import LandscapeModal from '../components/LandscapeModal'
 
 const BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
@@ -16,12 +16,11 @@ const STATUS_STYLE = {
 }
 
 export default function Applications() {
+  const navigate = useNavigate()
   const [data, setData]       = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch]   = useState('')
   const [filter, setFilter]   = useState('All')
-  const [selected, setSelected] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     applicationsApi.getAll()
@@ -38,15 +37,6 @@ export default function Applications() {
     )
   })
 
-  const setStatus = async (id, status) => {
-    try {
-      const updated = await applicationsApi.updateStatus(id, status)
-      setData(d => d.map(a => a._id === id ? updated : a))
-      setSelected(s => s?._id === id ? updated : s)
-      toast.success(`Status updated to ${status}`)
-    } catch (e) { toast.error(e.message) }
-  }
-
   const del = async (id) => {
     const result = await Swal.fire({
       title: 'Delete Application?', text: 'This action cannot be undone.', icon: 'warning',
@@ -57,7 +47,6 @@ export default function Applications() {
       try {
         await applicationsApi.delete(id)
         setData(d => d.filter(a => a._id !== id))
-        if (selected?._id === id) setSelected(null)
         toast.success('Application deleted.')
       } catch (e) { toast.error(e.message) }
     }
@@ -127,8 +116,8 @@ export default function Applications() {
                   : filtered.map((a, i) => (
                     <motion.tr key={a._id}
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.04 }}
-                      onClick={() => { setSelected(a); setIsModalOpen(true); }}
-                      style={{ cursor: 'pointer', background: selected?._id === a._id ? 'rgba(255,122,0,0.05)' : 'transparent' }}>
+                      onClick={() => navigate(`/applications/${a._id}`)}
+                      style={{ cursor: 'pointer' }}>
                       <td>
                         <div className="flex items-center gap-2.5">
                           <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0"
@@ -159,7 +148,7 @@ export default function Applications() {
                       <td style={{ color: 'var(--text-label)', fontSize: 11.5 }}>{new Date(a.createdAt).toLocaleDateString('en-IN')}</td>
                       <td>
                         <div className="flex gap-1.5 text-right justify-end">
-                          <button onClick={e => { e.stopPropagation(); setSelected(a); setIsModalOpen(true); }}
+                          <button onClick={e => { e.stopPropagation(); navigate(`/applications/${a._id}`) }}
                             style={{ background: 'rgba(0,163,224,0.1)', border: '1px solid rgba(0,163,224,0.2)', borderRadius: 7, padding: '5px 7px', cursor: 'pointer' }}>
                             <Eye size={12} color="#00A3E0" />
                           </button>
@@ -175,16 +164,6 @@ export default function Applications() {
           </table>
         </div>
       </div>
-
-      <LandscapeModal
-        isOpen={isModalOpen}
-        onClose={() => { setIsModalOpen(false); setSelected(null); }}
-        type="application"
-        data={selected}
-        statusStyles={STATUS_STYLE}
-        onStatusUpdate={setStatus}
-        onDownloadCv={downloadCv}
-      />
     </div>
   )
 }

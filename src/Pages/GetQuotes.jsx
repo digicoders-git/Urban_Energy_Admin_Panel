@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { HandCoins, Trash2, Eye, X, Phone, Mail, MapPin, Zap, ChevronLeft, ChevronRight, Maximize2 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Swal from 'sweetalert2'
 import { quotesApi } from '../api'
-import LandscapeModal from '../components/LandscapeModal'
 
 const S = {
   new: { bg: 'rgba(0,163,224,0.12)', color: '#00A3E0', border: 'rgba(0,163,224,0.25)', label: 'New' },
@@ -13,12 +13,11 @@ const S = {
 const PER_PAGE = 5
 
 export default function GetQuotes() {
+  const navigate = useNavigate()
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
   const [page, setPage] = useState(1)
-  const [selected, setSelected] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     quotesApi.getAll()
@@ -36,7 +35,6 @@ export default function GetQuotes() {
     try {
       const updated = await quotesApi.updateStatus(id, status)
       setData(prev => prev.map(d => d._id === id ? updated : d))
-      if (selected?._id === id) setSelected(updated)
       toast.success(`Status updated to ${status}`)
     } catch (e) { toast.error(e.message) }
   }
@@ -51,7 +49,6 @@ export default function GetQuotes() {
       try {
         await quotesApi.delete(id)
         setData(prev => prev.filter(d => d._id !== id))
-        if (selected?._id === id) setSelected(null)
         toast.success('Quote deleted.')
       } catch (e) { toast.error(e.message) }
     }
@@ -107,7 +104,7 @@ export default function GetQuotes() {
                   : paginated.map((row) => {
                     const s = S[row.status]
                     return (
-                      <tr key={row._id} onClick={() => { setSelected(row); setIsModalOpen(true); }} style={{ cursor: 'pointer' }}>
+                      <tr key={row._id} onClick={() => navigate(`/get-quotes/${row._id}`)} style={{ cursor: 'pointer' }}>
                         <td>
                           <div style={{ fontWeight: 700, color: '#ffffff', fontSize: 13 }}>{row.name}</div>
                           <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 2 }}>{row.phone}</div>
@@ -119,7 +116,7 @@ export default function GetQuotes() {
                         <td><span className="badge" style={{ background: s.bg, color: s.color, border: `1px solid ${s.border}` }}>{s.label}</span></td>
                         <td>
                           <div style={{ display: 'flex', gap: 5, justifyContent: 'end' }} onClick={e => e.stopPropagation()}>
-                            <button onClick={() => { setSelected(row); setIsModalOpen(true); }} style={{ background: 'rgba(0,163,224,0.1)', border: '1px solid rgba(0,163,224,0.2)', borderRadius: 7, padding: '5px 7px', cursor: 'pointer' }}><Eye size={12} color="#00A3E0" /></button>
+                            <button onClick={() => navigate(`/get-quotes/${row._id}`)} style={{ background: 'rgba(0,163,224,0.1)', border: '1px solid rgba(0,163,224,0.2)', borderRadius: 7, padding: '5px 7px', cursor: 'pointer' }}><Eye size={12} color="#00A3E0" /></button>
                             <button onClick={() => remove(row._id)} style={{ background: 'rgba(220,38,38,0.1)', border: '1px solid rgba(220,38,38,0.2)', borderRadius: 7, padding: '5px 7px', cursor: 'pointer' }}><Trash2 size={12} color="#f87171" /></button>
                           </div>
                         </td>
@@ -141,14 +138,6 @@ export default function GetQuotes() {
         )}
       </div>
 
-      <LandscapeModal
-        isOpen={isModalOpen}
-        onClose={() => { setIsModalOpen(false); setSelected(null); }}
-        type="quote"
-        data={selected}
-        statusStyles={S}
-        onStatusUpdate={updateStatus}
-      />
     </div>
   )
 }

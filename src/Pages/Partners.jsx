@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { Handshake, Trash2, CheckCircle, XCircle, ChevronLeft, ChevronRight, Eye, X, Mail, Phone, MapPin, Building2, Maximize2 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Swal from 'sweetalert2'
 import { partnersApi } from '../api'
-import LandscapeModal from '../components/LandscapeModal'
 
 const S = {
   pending: { bg: 'rgba(255,184,0,0.12)', color: '#FFB800', border: 'rgba(255,184,0,0.25)', label: 'Pending' },
@@ -13,12 +13,11 @@ const S = {
 const PER_PAGE = 5
 
 export default function Partners() {
+  const navigate = useNavigate()
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
   const [page, setPage] = useState(1)
-  const [viewing, setViewing] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     partnersApi.getAll()
@@ -36,7 +35,6 @@ export default function Partners() {
     try {
       const updated = await partnersApi.updateStatus(id, status)
       setData(prev => prev.map(d => d._id === id ? updated : d))
-      setViewing(v => v?._id === id ? updated : v)
       toast.success(`Partner ${status === 'approved' ? 'Approved ✓' : 'Rejected ✕'}`)
     } catch (e) { toast.error(e.message) }
   }
@@ -106,7 +104,7 @@ export default function Partners() {
                   : paginated.map((row) => {
                     const s = S[row.status]
                     return (
-                      <tr key={row._id} onDoubleClick={() => { setViewing(row); setIsModalOpen(true); }} style={{ cursor: 'pointer' }}>
+                      <tr key={row._id} onDoubleClick={() => navigate(`/partners/${row._id}`)} style={{ cursor: 'pointer' }}>
                         <td>
                           <div style={{ fontWeight: 700, color: 'white', fontSize: 13 }}>{row.name}</div>
                           <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 2 }}>{row.email}</div>
@@ -130,7 +128,7 @@ export default function Partners() {
                                 <XCircle size={13} strokeWidth={2.5} /> Reject
                               </button>
                             )}
-                            <button onClick={() => { setViewing(row); setIsModalOpen(true); }} style={{ background: 'rgba(0,163,224,0.1)', border: '1px solid rgba(0,163,224,0.2)', borderRadius: 8, padding: '5px 7px', cursor: 'pointer', color: '#00A3E0' }}><Eye size={13} /></button>
+                            <button onClick={() => navigate(`/partners/${row._id}`)} style={{ background: 'rgba(0,163,224,0.1)', border: '1px solid rgba(0,163,224,0.2)', borderRadius: 8, padding: '5px 7px', cursor: 'pointer', color: '#00A3E0' }}><Eye size={13} /></button>
                             <button onClick={() => remove(row._id)} style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: 8, padding: '5px 7px', cursor: 'pointer', color: '#f87171' }}><Trash2 size={13} /></button>
                           </div>
                         </td>
@@ -153,15 +151,6 @@ export default function Partners() {
           </div>
         )}
       </div>
-
-      <LandscapeModal
-        isOpen={isModalOpen}
-        onClose={() => { setIsModalOpen(false); setViewing(null); }}
-        type="partner"
-        data={viewing}
-        statusStyles={S}
-        onStatusUpdate={updateStatus}
-      />
     </div>
   )
 }

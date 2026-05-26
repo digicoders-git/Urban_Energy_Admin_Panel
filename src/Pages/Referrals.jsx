@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import { Search, Trash2, Eye, Phone, Mail, MapPin, IndianRupee, X, User, Gift, Zap, MessageSquare, Maximize2 } from 'lucide-react'
 import { toast } from 'react-toastify'
 import Swal from 'sweetalert2'
 import { referralsApi } from '../api'
-import LandscapeModal from '../components/LandscapeModal'
 
 const S = {
   New:       { bg: 'rgba(255,122,0,0.12)', color: '#FF7A00', border: 'rgba(255,122,0,0.25)' },
@@ -14,23 +14,11 @@ const S = {
 }
 
 export default function Referrals() {
+  const navigate = useNavigate()
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('All')
-  const [selected, setSelected] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-
-  const [editingComm, setEditingComm] = useState(false)
-  const [commValue, setCommValue] = useState('')
-  const [savingComm, setSavingComm] = useState(false)
-
-  useEffect(() => {
-    if (selected) {
-      setCommValue(selected.commission ?? '')
-      setEditingComm(false)
-    }
-  }, [selected])
 
   useEffect(() => {
     referralsApi.getAll()
@@ -51,15 +39,6 @@ export default function Referrals() {
     return matchesSearch && (filter === 'All' || r.status === filter)
   })
 
-  const setStatus = async (id, status) => {
-    try {
-      const updated = await referralsApi.updateStatus(id, status)
-      setData(d => d.map(r => r._id === id ? updated : r))
-      setSelected(s => s?._id === id ? updated : s)
-      toast.success(`Status updated to ${status}`)
-    } catch (e) { toast.error(e.message) }
-  }
-
   const del = async (id) => {
     const result = await Swal.fire({
       title: 'Delete Referral?', text: 'This action cannot be undone.', icon: 'warning',
@@ -70,39 +49,8 @@ export default function Referrals() {
       try {
         await referralsApi.delete(id)
         setData(d => d.filter(r => r._id !== id))
-        if (selected?._id === id) setSelected(null)
         toast.success('Referral deleted.')
       } catch (e) { toast.error(e.message) }
-    }
-  }
-
-  const updateCommission = async () => {
-    if (commValue === '' || isNaN(commValue)) {
-      return toast.error('Please enter a valid number for commission.')
-    }
-    setSavingComm(true)
-    try {
-      const updated = await referralsApi.updateCommission(selected._id, Number(commValue))
-      setData(d => d.map(r => r._id === selected._id ? updated : r))
-      setSelected(updated)
-      setEditingComm(false)
-      toast.success('Referral commission updated!')
-    } catch (e) {
-      toast.error(e.message)
-    } finally {
-      setSavingComm(false)
-    }
-  }
-
-  // Helper for commission update directly inside the LandscapeModal
-  const handleCommissionUpdateFromModal = async (id, value) => {
-    try {
-      const updated = await referralsApi.updateCommission(id, value)
-      setData(d => d.map(r => r._id === id ? updated : r))
-      setSelected(updated)
-      toast.success('Referral commission updated!')
-    } catch (e) {
-      toast.error(e.message)
     }
   }
 
@@ -159,8 +107,8 @@ export default function Referrals() {
                   : filtered.map((r, i) => (
                     <motion.tr key={r._id}
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.04 }}
-                      onClick={() => { setSelected(r); setIsModalOpen(true); }}
-                      style={{ cursor: 'pointer', background: selected?._id === r._id ? 'rgba(255,122,0,0.05)' : 'transparent' }}>
+                      onClick={() => navigate(`/referrals/${r._id}`)}
+                      style={{ cursor: 'pointer' }}>
                       <td>
                         <div className="flex items-center gap-2.5">
                           <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0"
@@ -189,7 +137,7 @@ export default function Referrals() {
                       <td style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11.5 }}>{new Date(r.createdAt).toLocaleDateString('en-IN')}</td>
                       <td>
                         <div className="flex gap-1.5 text-right justify-end">
-                          <button onClick={e => { e.stopPropagation(); setSelected(r); setIsModalOpen(true); }}
+                          <button onClick={e => { e.stopPropagation(); navigate(`/referrals/${r._id}`) }}
                             style={{ background: 'rgba(0,163,224,0.1)', border: '1px solid rgba(0,163,224,0.2)', borderRadius: 7, padding: '5px 7px', cursor: 'pointer' }}>
                             <Eye size={12} color="#00A3E0" />
                           </button>
@@ -205,16 +153,6 @@ export default function Referrals() {
           </table>
         </div>
       </div>
-
-      <LandscapeModal
-        isOpen={isModalOpen}
-        onClose={() => { setIsModalOpen(false); setSelected(null); }}
-        type="referral"
-        data={selected}
-        statusStyles={S}
-        onStatusUpdate={setStatus}
-        onUpdateCommission={handleCommissionUpdateFromModal}
-      />
     </div>
   )
 }

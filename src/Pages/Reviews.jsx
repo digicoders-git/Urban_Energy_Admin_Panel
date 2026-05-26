@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { Star, Trash2, CheckCircle, XCircle, ChevronLeft, ChevronRight, Eye, X, Maximize2 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Swal from 'sweetalert2'
 import { reviewsApi } from '../api'
-import LandscapeModal from '../components/LandscapeModal'
 
 const S = {
   pending: { bg: 'rgba(255,184,0,0.12)', color: '#FFB800', border: 'rgba(255,184,0,0.25)', label: 'Pending' },
@@ -22,12 +22,11 @@ function StarRow({ count }) {
 const PER_PAGE = 5
 
 export default function Reviews() {
+  const navigate = useNavigate()
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
   const [page, setPage] = useState(1)
-  const [viewing, setViewing] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     reviewsApi.getAll()
@@ -45,7 +44,6 @@ export default function Reviews() {
     try {
       const updated = await reviewsApi.updateStatus(id, status)
       setData(prev => prev.map(d => d._id === id ? updated : d))
-      setViewing(v => v?._id === id ? updated : v)
       toast.success(status === 'published' ? 'Review Published ✓' : 'Review Rejected ✕')
     } catch (e) { toast.error(e.message) }
   }
@@ -60,7 +58,6 @@ export default function Reviews() {
       try {
         await reviewsApi.delete(id)
         setData(prev => prev.filter(d => d._id !== id))
-        if (viewing?._id === id) setViewing(null)
         toast.success('Review deleted.')
       } catch (e) { toast.error(e.message) }
     }
@@ -116,7 +113,7 @@ export default function Reviews() {
                   : paginated.map((row) => {
                     const s = S[row.status]
                     return (
-                      <tr key={row._id} onDoubleClick={() => { setViewing(row); setIsModalOpen(true); }} style={{ cursor: 'pointer' }}>
+                      <tr key={row._id} onDoubleClick={() => navigate(`/reviews/${row._id}`)} style={{ cursor: 'pointer' }}>
                         <td>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
                             <div style={{ width: 34, height: 34, borderRadius: '50%', background: 'linear-gradient(135deg,#FF7A00,#FFB800)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 800, fontSize: 12, flexShrink: 0 }}>
@@ -133,8 +130,8 @@ export default function Reviews() {
                         <td style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12, whiteSpace: 'nowrap' }}>{new Date(row.createdAt).toLocaleDateString('en-IN')}</td>
                         <td><span className="badge" style={{ background: s.bg, color: s.color, border: `1px solid ${s.border}` }}>{s.label}</span></td>
                         <td>
-                          <div style={{ display: 'flex', gap: 6, alignItems: 'center', justifyContent: 'end' }}>
-                            <button onClick={() => { setViewing(row); setIsModalOpen(true); }} style={{ background: 'rgba(0,163,224,0.1)', border: '1px solid rgba(0,163,224,0.2)', borderRadius: 8, padding: '5px 7px', cursor: 'pointer', color: '#00A3E0' }}><Eye size={13} /></button>
+                          <div style={{ display: 'flex', gap: 6, alignItems: 'center', justifyContent: 'end' }} onClick={e => e.stopPropagation()}>
+                            <button onClick={() => navigate(`/reviews/${row._id}`)} style={{ background: 'rgba(0,163,224,0.1)', border: '1px solid rgba(0,163,224,0.2)', borderRadius: 8, padding: '5px 7px', cursor: 'pointer', color: '#00A3E0' }}><Eye size={13} /></button>
                             {row.status !== 'published' && <button onClick={() => updateStatus(row._id, 'published')} style={{ background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.25)', borderRadius: 8, padding: '5px 8px', cursor: 'pointer', color: '#22c55e', display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700 }}><CheckCircle size={13} /> Publish</button>}
                             {row.status !== 'rejected' && <button onClick={() => updateStatus(row._id, 'rejected')} style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 8, padding: '5px 8px', cursor: 'pointer', color: '#ef4444', display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700 }}><XCircle size={13} /> Reject</button>}
                             <button onClick={() => remove(row._id)} style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: 8, padding: '5px 7px', cursor: 'pointer', color: '#f87171' }}><Trash2 size={13} /></button>
@@ -158,14 +155,6 @@ export default function Reviews() {
         )}
       </div>
 
-      <LandscapeModal
-        isOpen={isModalOpen}
-        onClose={() => { setIsModalOpen(false); setViewing(null); }}
-        type="review"
-        data={viewing}
-        statusStyles={S}
-        onStatusUpdate={updateStatus}
-      />
     </div>
   )
 }

@@ -4,17 +4,19 @@ import { ToastContainer } from 'react-toastify'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
 import Layout from './components/Layout'
-import Login from './Pages/Login'
-import Dashboard from './Pages/Dashboard'
-import Contacts from './Pages/Contacts'
-import Queries from './Pages/Queries'
-import Blogs from './Pages/Blogs'
-import Settings from './Pages/Settings'
-import Partners from './Pages/Partners'
-import GetQuotes from './Pages/GetQuotes'
-import Reviews from './Pages/Reviews'
-import Applications from './Pages/Applications'
-import Referrals from './Pages/Referrals'
+import Login from './pages/Login'
+import Dashboard from './pages/Dashboard'
+import Contacts from './pages/Contacts'
+import RecordDetails from './pages/RecordDetails'
+import Queries from './pages/Queries'
+import Blogs from './pages/Blogs'
+import Settings from './pages/Settings'
+import Partners from './pages/Partners'
+import GetQuotes from './pages/GetQuotes'
+import Reviews from './pages/Reviews'
+import Applications from './pages/Applications'
+import Referrals from './pages/Referrals'
+
 
 
 function Guard({ children }) {
@@ -37,13 +39,20 @@ function AppRoutes() {
       <Route path="/" element={<Navigate to="/dashboard" replace />} />
       <Route path="/dashboard" element={<Guard><Layout><Dashboard /></Layout></Guard>} />
       <Route path="/contacts" element={<Guard><Layout><Contacts /></Layout></Guard>} />
+      <Route path="/contacts/:id" element={<Guard><Layout><RecordDetails type="contact" /></Layout></Guard>} />
       <Route path="/queries" element={<Guard><Layout><Queries /></Layout></Guard>} />
+      <Route path="/queries/:id" element={<Guard><Layout><RecordDetails type="query" /></Layout></Guard>} />
       <Route path="/blogs" element={<Guard><Layout><Blogs /></Layout></Guard>} />
       <Route path="/partners" element={<Guard><Layout><Partners /></Layout></Guard>} />
+      <Route path="/partners/:id" element={<Guard><Layout><RecordDetails type="partner" /></Layout></Guard>} />
       <Route path="/referrals" element={<Guard><Layout><Referrals /></Layout></Guard>} />
+      <Route path="/referrals/:id" element={<Guard><Layout><RecordDetails type="referral" /></Layout></Guard>} />
       <Route path="/get-quotes" element={<Guard><Layout><GetQuotes /></Layout></Guard>} />
+      <Route path="/get-quotes/:id" element={<Guard><Layout><RecordDetails type="quote" /></Layout></Guard>} />
       <Route path="/reviews" element={<Guard><Layout><Reviews /></Layout></Guard>} />
+      <Route path="/reviews/:id" element={<Guard><Layout><RecordDetails type="review" /></Layout></Guard>} />
       <Route path="/applications" element={<Guard><Layout><Applications /></Layout></Guard>} />
+      <Route path="/applications/:id" element={<Guard><Layout><RecordDetails type="application" /></Layout></Guard>} />
       <Route path="/settings" element={<Guard><Layout><Settings /></Layout></Guard>} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>

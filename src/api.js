@@ -34,6 +34,7 @@ export const authApi = {
 
 export const contactsApi = {
   getAll:      ()              => get('/contacts'),
+  getById:     (id)            => get(`/contacts/${id}`),
   updateStatus:(id, status)   => patch(`/contacts/${id}/status`, { status }),
   delete:      (id)           => del(`/contacts/${id}`),
 }
@@ -94,4 +95,5 @@ export const referralsApi = {
   delete:                 (id)            => del(`/referrals/${id}`),
   getCommissionConfig:    ()              => get('/referrals/commission-config'),
   updateCommissionConfig: (body)          => put('/referrals/commission-config', body),
+  getQrCodeUrl:           (referrerId)    => `${BASE}/referrers/qrcode/${referrerId}`,
 }

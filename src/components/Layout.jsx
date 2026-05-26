@@ -222,7 +222,20 @@ export default function Layout({ children }) {
   const { user, profile } = useAuth()
   const location = useLocation()
 
-  const pageTitle = NAV.find(n => n.to === location.pathname)?.label || 'Dashboard'
+  const getPageTitle = () => {
+    const currentPath = location.pathname
+    if (currentPath.startsWith('/contacts/')) return 'Contact Details'
+    if (currentPath.startsWith('/queries/')) return 'Inquiry Details'
+    if (currentPath.startsWith('/partners/')) return 'Partner Details'
+    if (currentPath.startsWith('/referrals/')) return 'Referral Details'
+    if (currentPath.startsWith('/get-quotes/')) return 'Quote Details'
+    if (currentPath.startsWith('/reviews/')) return 'Review Details'
+    if (currentPath.startsWith('/applications/')) return 'Application Details'
+    
+    return NAV.find(n => n.to === currentPath)?.label || 'Dashboard'
+  }
+
+  const pageTitle = getPageTitle()
 
   return (
     <div className="flex h-screen overflow-hidden" style={{ background: 'var(--bg-main)' }}>

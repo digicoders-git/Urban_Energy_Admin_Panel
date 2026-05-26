@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useNavigate } from 'react-router-dom'
 import { Search, Trash2, Eye, Phone, MapPin, Zap, X, Maximize2 } from 'lucide-react'
 import { toast } from 'react-toastify'
 import Swal from 'sweetalert2'
 import { queriesApi } from '../api'
-import LandscapeModal from '../components/LandscapeModal'
 
 const S = {
   Pending: { bg: 'rgba(255,193,7,0.12)', color: '#FFC107', border: 'rgba(255,193,7,0.25)' },
@@ -13,12 +13,11 @@ const S = {
 }
 
 export default function Queries() {
+  const navigate = useNavigate()
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('All')
-  const [selected, setSelected] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
 
   useEffect(() => {
     queriesApi.getAll()
@@ -33,15 +32,6 @@ export default function Queries() {
       (filter === 'All' || q.status === filter)
   })
 
-  const setStatus = async (id, status) => {
-    try {
-      const updated = await queriesApi.updateStatus(id, status)
-      setData(d => d.map(q => q._id === id ? updated : q))
-      setSelected(s => s?._id === id ? updated : s)
-      toast.success(`Status updated to ${status}`)
-    } catch (e) { toast.error(e.message) }
-  }
-
   const del = async (id) => {
     const result = await Swal.fire({
       title: 'Delete Query?', text: 'This action cannot be undone.', icon: 'warning',
@@ -52,7 +42,6 @@ export default function Queries() {
       try {
         await queriesApi.delete(id)
         setData(d => d.filter(q => q._id !== id))
-        if (selected?._id === id) setSelected(null)
         toast.success('Query deleted.')
       } catch (e) { toast.error(e.message) }
     }
@@ -103,7 +92,7 @@ export default function Queries() {
                   : filtered.map((q, i) => (
                     <motion.tr key={q._id}
                       initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.04 }}
-                      onClick={() => { setSelected(q); setIsModalOpen(true); }}
+                      onClick={() => navigate(`/queries/${q._id}`)}
                       style={{ cursor: 'pointer' }}>
                       <td>
                         <div className="flex items-center gap-2.5">
@@ -126,7 +115,7 @@ export default function Queries() {
                       <td style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11.5 }}>{new Date(q.createdAt).toLocaleDateString('en-IN')}</td>
                       <td>
                         <div className="flex gap-1.5 text-right justify-end">
-                          <button onClick={e => { e.stopPropagation(); setSelected(q); setIsModalOpen(true); }}
+                          <button onClick={e => { e.stopPropagation(); navigate(`/queries/${q._id}`) }}
                             style={{ background: 'rgba(0,163,224,0.1)', border: '1px solid rgba(0,163,224,0.2)', borderRadius: 7, padding: '5px 7px', cursor: 'pointer' }}>
                             <Eye size={12} color="#00A3E0" />
                           </button>
@@ -142,15 +131,6 @@ export default function Queries() {
           </table>
         </div>
       </div>
-
-      <LandscapeModal
-        isOpen={isModalOpen}
-        onClose={() => { setIsModalOpen(false); setSelected(null); }}
-        type="query"
-        data={selected}
-        statusStyles={S}
-        onStatusUpdate={setStatus}
-      />
     </div>
   )
 }
