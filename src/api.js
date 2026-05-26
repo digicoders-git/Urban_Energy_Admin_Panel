@@ -57,6 +57,19 @@ export const partnersApi = {
   delete:      (id)           => del(`/partners/${id}`),
 }
 
+export const referralsApi = {
+  getAll:           ()                         => get('/referrals'),
+  updateStatus:     (id, status)               => patch(`/referrals/${id}/status`, { status }),
+  updateCommission: (id, commission)           => patch(`/referrals/${id}/commission`, { commission }),
+  delete:           (id)                       => del(`/referrals/${id}`),
+}
+
+export const referrersApi = {
+  getAll:      ()              => get('/referrers/admin/all'),
+  updateStatus:(id, status)   => patch(`/referrers/admin/${id}/status`, { status }),
+  delete:      (id)           => del(`/referrers/admin/${id}`),
+}
+
 export const quotesApi = {
   getAll:      ()              => get('/quotes'),
   updateStatus:(id, status)   => patch(`/quotes/${id}/status`, { status }),

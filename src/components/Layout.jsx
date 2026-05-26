@@ -3,7 +3,7 @@ import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, Users, MessageSquare, FileText,
-  Settings, LogOut, Menu, X, Bell, Handshake, HandCoins, Star, BriefcaseBusiness
+  Settings, LogOut, Menu, X, Bell, Handshake, HandCoins, Star, BriefcaseBusiness, UserCheck, Gift
 } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { notificationsApi } from '../api'
@@ -15,6 +15,8 @@ const NAV = [
   { to: '/queries', icon: MessageSquare, label: 'Queries' },
   { to: '/get-quotes', icon: HandCoins, label: 'Get Quotes' },
   { to: '/partners', icon: Handshake, label: 'Partners' },
+  { to: '/referrers', icon: UserCheck, label: 'Referrers' },
+  { to: '/referrals', icon: Gift, label: 'Referrals' },
   { to: '/reviews', icon: Star, label: 'Reviews' },
   { to: '/applications', icon: BriefcaseBusiness, label: 'Applications' },
   { to: '/blogs', icon: FileText, label: 'Blogs' },

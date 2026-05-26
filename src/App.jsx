@@ -11,6 +11,8 @@ import Queries from './Pages/Queries'
 import Blogs from './Pages/Blogs'
 import Settings from './Pages/Settings'
 import Partners from './Pages/Partners'
+import Referrers from './Pages/Referrers'
+import Referrals from './Pages/Referrals'
 import GetQuotes from './Pages/GetQuotes'
 import Reviews from './Pages/Reviews'
 import Applications from './Pages/Applications'
@@ -39,6 +41,8 @@ function AppRoutes() {
       <Route path="/queries" element={<Guard><Layout><Queries /></Layout></Guard>} />
       <Route path="/blogs" element={<Guard><Layout><Blogs /></Layout></Guard>} />
       <Route path="/partners" element={<Guard><Layout><Partners /></Layout></Guard>} />
+      <Route path="/referrers" element={<Guard><Layout><Referrers /></Layout></Guard>} />
+      <Route path="/referrals" element={<Guard><Layout><Referrals /></Layout></Guard>} />
       <Route path="/get-quotes" element={<Guard><Layout><GetQuotes /></Layout></Guard>} />
       <Route path="/reviews" element={<Guard><Layout><Reviews /></Layout></Guard>} />
       <Route path="/applications" element={<Guard><Layout><Applications /></Layout></Guard>} />

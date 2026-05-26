@@ -9,12 +9,21 @@ const S = {
   contacted: { bg: 'rgba(255,184,0,0.12)', color: '#FFB800', border: 'rgba(255,184,0,0.25)', label: 'Contacted' },
   closed: { bg: 'rgba(34,197,94,0.12)', color: '#22c55e', border: 'rgba(34,197,94,0.25)', label: 'Closed' },
 }
+
+const CATEGORIES = {
+  residential: { bg: 'rgba(59,130,246,0.12)', color: '#3B82F6', border: 'rgba(59,130,246,0.25)', label: '🏠 Residential' },
+  ongrid: { bg: 'rgba(34,197,94,0.12)', color: '#22C55E', border: 'rgba(34,197,94,0.25)', label: '⚡ On-Grid' },
+  offgrid: { bg: 'rgba(168,85,247,0.12)', color: '#A855F7', border: 'rgba(168,85,247,0.25)', label: '🔋 Off-Grid' },
+  commercial: { bg: 'rgba(249,115,22,0.12)', color: '#F97316', border: 'rgba(249,115,22,0.25)', label: '🏢 Commercial' },
+}
+
 const PER_PAGE = 5
 
 export default function GetQuotes() {
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
+  const [categoryFilter, setCategoryFilter] = useState('all')
   const [page, setPage] = useState(1)
   const [selected, setSelected] = useState(null)
 
@@ -25,10 +34,29 @@ export default function GetQuotes() {
       .finally(() => setLoading(false))
   }, [])
 
-  const filtered = filter === 'all' ? data : data.filter(d => d.status === filter)
+  const filtered = data.filter(d => {
+    const statusMatch = filter === 'all' ? true : d.status === filter
+    const categoryMatch = categoryFilter === 'all' ? true : d.category === categoryFilter
+    return statusMatch && categoryMatch
+  })
+
   const totalPages = Math.ceil(filtered.length / PER_PAGE)
   const paginated = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE)
-  const counts = { all: data.length, new: data.filter(d => d.status === 'new').length, contacted: data.filter(d => d.status === 'contacted').length, closed: data.filter(d => d.status === 'closed').length }
+  
+  const counts = {
+    all: data.length,
+    new: data.filter(d => d.status === 'new').length,
+    contacted: data.filter(d => d.status === 'contacted').length,
+    closed: data.filter(d => d.status === 'closed').length,
+  }
+
+  const categoryCounts = {
+    all: data.length,
+    residential: data.filter(d => d.category === 'residential').length,
+    ongrid: data.filter(d => d.category === 'ongrid').length,
+    offgrid: data.filter(d => d.category === 'offgrid').length,
+    commercial: data.filter(d => d.category === 'commercial').length,
+  }
 
   const updateStatus = async (id, status) => {
     try {
@@ -84,6 +112,7 @@ export default function GetQuotes() {
         ))}
       </div>
 
+      {/* Status Filter */}
       <div className="filter-bar">
         {['all', 'new', 'contacted', 'closed'].map(f => (
           <button key={f} onClick={() => { setFilter(f); setPage(1) }} className="btn"
@@ -93,24 +122,49 @@ export default function GetQuotes() {
         ))}
       </div>
 
+      {/* Category Filter */}
+      <div style={{ marginBottom: 16, display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+        <span style={{ fontSize: 12, fontWeight: 700, color: 'rgba(255,255,255,0.5)', textTransform: 'uppercase', letterSpacing: 0.5 }}>Category:</span>
+        {['all', 'residential', 'ongrid', 'offgrid', 'commercial'].map(cat => {
+          const catInfo = CATEGORIES[cat] || { bg: 'rgba(255,255,255,0.06)', color: 'rgba(255,255,255,0.5)', border: 'rgba(255,255,255,0.1)', label: 'All' }
+          return (
+            <button key={cat} onClick={() => { setCategoryFilter(cat); setPage(1) }} className="btn"
+              style={{ 
+                background: categoryFilter === cat ? catInfo.bg : 'rgba(255,255,255,0.03)',
+                color: categoryFilter === cat ? catInfo.color : 'rgba(255,255,255,0.4)',
+                border: categoryFilter === cat ? `1px solid ${catInfo.border}` : '1px solid rgba(255,255,255,0.08)',
+                textTransform: 'capitalize',
+                padding: '7px 14px',
+                fontSize: 12,
+                fontWeight: 600,
+                transition: 'all 0.2s'
+              }}>
+              {cat === 'all' ? 'All' : CATEGORIES[cat].label} ({categoryCounts[cat]})
+            </button>
+          )
+        })}
+      </div>
+
       <div className="split">
         <div className="glass" style={{ overflow: 'hidden' }}>
           <div style={{ overflowX: 'auto' }}>
             <table className="tbl">
-              <thead><tr><th>Name</th><th>Type</th><th>Size</th><th>City</th><th>Date</th><th>Status</th><th></th></tr></thead>
+              <thead><tr><th>Name</th><th>Category</th><th>Type</th><th>Size</th><th>City</th><th>Date</th><th>Status</th><th></th></tr></thead>
               <tbody>
                 {loading
-                  ? <tr><td colSpan={7} style={{ textAlign: 'center', padding: 40, color: 'rgba(255,255,255,0.4)' }}>Loading...</td></tr>
+                  ? <tr><td colSpan={8} style={{ textAlign: 'center', padding: 40, color: 'rgba(255,255,255,0.4)' }}>Loading...</td></tr>
                   : paginated.length === 0
-                    ? <tr><td colSpan={7} style={{ textAlign: 'center', padding: 40, color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>No records found.</td></tr>
+                    ? <tr><td colSpan={8} style={{ textAlign: 'center', padding: 40, color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>No records found.</td></tr>
                     : paginated.map((row) => {
                       const s = S[row.status]
+                      const cat = CATEGORIES[row.category] || CATEGORIES.residential
                       return (
                         <tr key={row._id} onClick={() => setSelected(row)} style={{ cursor: 'pointer', background: selected?._id === row._id ? 'rgba(255,122,0,0.04)' : 'transparent' }}>
                           <td>
                             <div style={{ fontWeight: 700, color: '#ffffff', fontSize: 13 }}>{row.name}</div>
                             <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 2 }}>{row.phone}</div>
                           </td>
+                          <td><span className="badge" style={{ background: cat.bg, color: cat.color, border: `1px solid ${cat.border}` }}>{cat.label}</span></td>
                           <td><span className="badge" style={{ background: 'rgba(255,122,0,0.12)', color: '#FF7A00', border: '1px solid rgba(255,122,0,0.2)' }}>{row.type}</span></td>
                           <td style={{ color: '#ffffff', fontWeight: 700, fontSize: 13 }}>{row.systemSize}</td>
                           <td style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>{row.city}</td>
@@ -147,6 +201,17 @@ export default function GetQuotes() {
                 <div style={{ fontWeight: 700, color: '#ffffff', fontSize: 14 }}>{selected.name}</div>
                 <button onClick={() => setSelected(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}><X size={15} color="var(--text-dim)" /></button>
               </div>
+              
+              {/* Category Badge */}
+              {selected.category && (
+                <div style={{ marginBottom: 12 }}>
+                  <div style={{ fontSize: 10, color: 'rgba(255,255,255,0.3)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 6 }}>Category</div>
+                  <span className="badge" style={{ background: CATEGORIES[selected.category].bg, color: CATEGORIES[selected.category].color, border: `1px solid ${CATEGORIES[selected.category].border}`, display: 'inline-block' }}>
+                    {CATEGORIES[selected.category].label}
+                  </span>
+                </div>
+              )}
+
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 14 }}>
                 {[
                   { Icon: Mail, val: selected.email },
