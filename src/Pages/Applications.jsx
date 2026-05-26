@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Search, Trash2, Eye, Phone, Mail, Briefcase, Download, X, FileText } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import { Search, Trash2, Eye, Phone, Mail, Briefcase, Download, X, FileText, Maximize2 } from 'lucide-react'
 import { toast } from 'react-toastify'
 import Swal from 'sweetalert2'
 import { applicationsApi } from '../api'
@@ -15,11 +16,11 @@ const STATUS_STYLE = {
 }
 
 export default function Applications() {
+  const navigate = useNavigate()
   const [data, setData]       = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch]   = useState('')
   const [filter, setFilter]   = useState('All')
-  const [selected, setSelected] = useState(null)
 
   useEffect(() => {
     applicationsApi.getAll()
@@ -36,15 +37,6 @@ export default function Applications() {
     )
   })
 
-  const setStatus = async (id, status) => {
-    try {
-      const updated = await applicationsApi.updateStatus(id, status)
-      setData(d => d.map(a => a._id === id ? updated : a))
-      setSelected(s => s?._id === id ? updated : s)
-      toast.success(`Status updated to ${status}`)
-    } catch (e) { toast.error(e.message) }
-  }
-
   const del = async (id) => {
     const result = await Swal.fire({
       title: 'Delete Application?', text: 'This action cannot be undone.', icon: 'warning',
@@ -55,7 +47,6 @@ export default function Applications() {
       try {
         await applicationsApi.delete(id)
         setData(d => d.filter(a => a._id !== id))
-        if (selected?._id === id) setSelected(null)
         toast.success('Application deleted.')
       } catch (e) { toast.error(e.message) }
     }
@@ -110,147 +101,67 @@ export default function Applications() {
         </div>
       </div>
 
-      <div className="split">
-        {/* Table */}
-        <div className="glass" style={{ overflow: 'hidden' }}>
-          <div style={{ overflowX: 'auto' }}>
-            <table className="tbl">
-              <thead>
-                <tr><th>Applicant</th><th>Role</th><th>Status</th><th>CV</th><th>Date</th><th></th></tr>
-              </thead>
-              <tbody>
-                {loading
-                  ? <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-dim)' }}>Loading...</td></tr>
-                  : filtered.length === 0
-                    ? <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-dim)', fontSize: 13 }}>No applications found.</td></tr>
-                    : filtered.map((a, i) => (
-                      <motion.tr key={a._id}
-                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.04 }}
-                        onClick={() => setSelected(a)}
-                        style={{ cursor: 'pointer', background: selected?._id === a._id ? 'rgba(255,122,0,0.05)' : 'transparent' }}>
-                        <td>
-                          <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0"
-                              style={{ background: 'linear-gradient(135deg,#FF7A00,#FFB800)', color: 'white' }}>
-                              {a.name?.[0] ?? '?'}
-                            </div>
-                            <div>
-                              <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: 13 }}>{a.name}</div>
-                              <div style={{ fontSize: 11, color: 'var(--text-dim)' }}>{a.email}</div>
-                            </div>
+      {/* Table */}
+      <div className="glass" style={{ overflow: 'hidden' }}>
+        <div style={{ overflowX: 'auto' }}>
+          <table className="tbl">
+            <thead>
+              <tr><th>Applicant</th><th>Role</th><th>Status</th><th>CV</th><th>Date</th><th></th></tr>
+            </thead>
+            <tbody>
+              {loading
+                ? <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-dim)' }}>Loading...</td></tr>
+                : filtered.length === 0
+                  ? <tr><td colSpan={6} style={{ textAlign: 'center', padding: '40px', color: 'var(--text-dim)', fontSize: 13 }}>No applications found.</td></tr>
+                  : filtered.map((a, i) => (
+                    <motion.tr key={a._id}
+                      initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.04 }}
+                      onClick={() => navigate(`/applications/${a._id}`)}
+                      style={{ cursor: 'pointer' }}>
+                      <td>
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs flex-shrink-0"
+                            style={{ background: 'linear-gradient(135deg,#FF7A00,#FFB800)', color: 'white' }}>
+                            {a.name?.[0] ?? '?'}
                           </div>
-                        </td>
-                        <td style={{ color: 'var(--text-dim)', fontSize: 12.5 }}>{a.role}</td>
-                        <td>
-                          <span className="badge" style={{ background: STATUS_STYLE[a.status]?.bg, color: STATUS_STYLE[a.status]?.color, border: `1px solid ${STATUS_STYLE[a.status]?.border}` }}>
-                            {a.status}
-                          </span>
-                        </td>
-                        <td>
-                          {a.cv?.filename
-                            ? <button onClick={e => { e.stopPropagation(); downloadCv(a._id) }}
-                                style={{ background: 'rgba(0,201,167,0.1)', border: '1px solid rgba(0,201,167,0.25)', borderRadius: 7, padding: '5px 9px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#00C9A7', fontWeight: 600 }}>
-                                <Download size={11} /> CV
-                              </button>
-                            : <span style={{ fontSize: 11, color: 'var(--text-label)' }}>—</span>
-                          }
-                        </td>
-                        <td style={{ color: 'var(--text-label)', fontSize: 11.5 }}>{new Date(a.createdAt).toLocaleDateString('en-IN')}</td>
-                        <td>
-                          <div className="flex gap-1.5">
-                            <button onClick={e => { e.stopPropagation(); setSelected(a) }}
-                              style={{ background: 'rgba(0,163,224,0.1)', border: '1px solid rgba(0,163,224,0.2)', borderRadius: 7, padding: '5px 7px', cursor: 'pointer' }}>
-                              <Eye size={12} color="#00A3E0" />
-                            </button>
-                            <button onClick={e => { e.stopPropagation(); del(a._id) }}
-                              style={{ background: 'rgba(220,38,38,0.1)', border: '1px solid rgba(220,38,38,0.2)', borderRadius: 7, padding: '5px 7px', cursor: 'pointer' }}>
-                              <Trash2 size={12} color="#f87171" />
-                            </button>
+                          <div>
+                            <div style={{ fontWeight: 600, color: 'var(--text-main)', fontSize: 13 }}>{a.name}</div>
+                            <div style={{ fontSize: 11, color: 'var(--text-dim)' }}>{a.email}</div>
                           </div>
-                        </td>
-                      </motion.tr>
-                    ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        {/* Detail Panel */}
-        <div className="glass" style={{ padding: '18px', position: 'sticky', top: 0 }}>
-          {selected ? (
-            <motion.div key={selected._id} initial={{ opacity: 0, x: 8 }} animate={{ opacity: 1, x: 0 }}>
-              <div className="flex items-start justify-between mb-5">
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-full flex items-center justify-center font-bold text-base flex-shrink-0"
-                    style={{ background: 'linear-gradient(135deg,#FF7A00,#FFB800)', color: 'white' }}>
-                    {selected.name?.[0] ?? '?'}
-                  </div>
-                  <div>
-                    <div style={{ fontWeight: 700, fontSize: 14, color: 'var(--text-main)', marginBottom: 4 }}>{selected.name}</div>
-                    <span className="badge" style={{ background: STATUS_STYLE[selected.status]?.bg, color: STATUS_STYLE[selected.status]?.color, border: `1px solid ${STATUS_STYLE[selected.status]?.border}` }}>
-                      {selected.status}
-                    </span>
-                  </div>
-                </div>
-                <button onClick={() => setSelected(null)} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2 }}>
-                  <X size={16} color="#94a3b8" />
-                </button>
-              </div>
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginBottom: 16 }}>
-                {[
-                  { Icon: Phone,     val: selected.phone },
-                  { Icon: Mail,      val: selected.email },
-                  { Icon: Briefcase, val: selected.role  },
-                ].map(({ Icon, val }, i) => val && (
-                  <div key={i} className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0"
-                      style={{ background: 'rgba(255,122,0,0.1)', border: '1px solid rgba(255,122,0,0.18)' }}>
-                      <Icon size={13} color="#FF7A00" />
-                    </div>
-                    <span style={{ fontSize: 12.5, color: 'var(--text-dim)' }}>{val}</span>
-                  </div>
-                ))}
-              </div>
-
-              {selected.message && (
-                <div style={{ background: 'var(--bg-input)', borderRadius: 10, padding: '10px 12px', marginBottom: 16 }}>
-                  <div style={{ fontSize: 10, color: 'var(--text-label)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 5 }}>Cover Note</div>
-                  <p style={{ fontSize: 12.5, color: 'var(--text-dim)', lineHeight: 1.55 }}>{selected.message}</p>
-                </div>
-              )}
-
-              {selected.cv?.filename && (
-                <button onClick={() => downloadCv(selected._id)}
-                  style={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, padding: '10px 14px', borderRadius: 10, marginBottom: 16, background: 'rgba(0,201,167,0.1)', border: '1px solid rgba(0,201,167,0.3)', cursor: 'pointer', color: '#00C9A7', fontWeight: 700, fontSize: 13 }}>
-                  <FileText size={15} />
-                  Download CV — {selected.cv.filename}
-                  <Download size={14} />
-                </button>
-              )}
-
-              <div style={{ fontSize: 10, color: 'var(--text-label)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>Update Status</div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                {['New', 'Reviewed', 'Shortlisted', 'Rejected'].map(s => (
-                  <button key={s} onClick={() => setStatus(selected._id, s)}
-                    style={{
-                      padding: '8px 12px', borderRadius: 9, fontSize: 12.5, fontWeight: 600, cursor: 'pointer', textAlign: 'left',
-                      background: selected.status === s ? STATUS_STYLE[s].bg : 'var(--bg-input)',
-                      color: selected.status === s ? STATUS_STYLE[s].color : 'var(--text-dim)',
-                      border: selected.status === s ? `1px solid ${STATUS_STYLE[s].border}` : '1px solid var(--border-card)',
-                      transition: 'all 0.15s'
-                    }}>
-                    {s}
-                  </button>
-                ))}
-              </div>
-            </motion.div>
-          ) : (
-            <div style={{ textAlign: 'center', padding: '52px 16px', color: 'var(--text-dim)', fontSize: 13 }}>
-              <Eye size={30} color="var(--text-label)" style={{ margin: '0 auto 10px' }} />
-              Select an application to view details
-            </div>
-          )}
+                        </div>
+                      </td>
+                      <td style={{ color: 'var(--text-dim)', fontSize: 12.5 }}>{a.role}</td>
+                      <td>
+                        <span className="badge" style={{ background: STATUS_STYLE[a.status]?.bg, color: STATUS_STYLE[a.status]?.color, border: `1px solid ${STATUS_STYLE[a.status]?.border}` }}>
+                           {a.status}
+                        </span>
+                      </td>
+                      <td>
+                        {a.cv?.filename
+                          ? <button onClick={e => { e.stopPropagation(); downloadCv(a._id) }}
+                              style={{ background: 'rgba(0,201,167,0.1)', border: '1px solid rgba(0,201,167,0.25)', borderRadius: 7, padding: '5px 9px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, color: '#00C9A7', fontWeight: 600 }}>
+                              <Download size={11} /> CV
+                            </button>
+                          : <span style={{ fontSize: 11, color: 'var(--text-label)' }}>—</span>
+                        }
+                      </td>
+                      <td style={{ color: 'var(--text-label)', fontSize: 11.5 }}>{new Date(a.createdAt).toLocaleDateString('en-IN')}</td>
+                      <td>
+                        <div className="flex gap-1.5 text-right justify-end">
+                          <button onClick={e => { e.stopPropagation(); navigate(`/applications/${a._id}`) }}
+                            style={{ background: 'rgba(0,163,224,0.1)', border: '1px solid rgba(0,163,224,0.2)', borderRadius: 7, padding: '5px 7px', cursor: 'pointer' }}>
+                            <Eye size={12} color="#00A3E0" />
+                          </button>
+                          <button onClick={e => { e.stopPropagation(); del(a._id) }}
+                            style={{ background: 'rgba(220,38,38,0.1)', border: '1px solid rgba(220,38,38,0.2)', borderRadius: 7, padding: '5px 7px', cursor: 'pointer' }}>
+                            <Trash2 size={12} color="#f87171" />
+                          </button>
+                        </div>
+                      </td>
+                    </motion.tr>
+                  ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

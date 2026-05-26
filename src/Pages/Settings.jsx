@@ -1,10 +1,10 @@
-import React, { useState, useRef } from 'react'
+import React, { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Save, Phone, Mail, MapPin, Globe, Lock, Eye, EyeOff, Camera, User, Briefcase, Pencil } from 'lucide-react'
+import { Save, Phone, Mail, MapPin, Globe, Lock, Eye, EyeOff, Camera, User, Briefcase, Pencil, IndianRupee, Zap, Home, Users } from 'lucide-react'
 import { toast } from 'react-toastify'
 import Swal from 'sweetalert2'
 import { useAuth } from '../context/AuthContext'
-import { authApi } from '../api'
+import { authApi, referralsApi } from '../api'
 
 const CONTACT_FIELDS = [
   { key: 'phone', label: 'Phone Number', Icon: Phone, placeholder: '+91 98000 12345', type: 'text' },
@@ -52,6 +52,20 @@ export default function Settings() {
   const [passForm, setPassForm] = useState({ current: '', newPass: '', confirm: '' })
   const [showPass, setShowPass] = useState({ current: false, newPass: false, confirm: false })
 
+  const [commissionForm, setCommissionForm] = useState({
+    residential: 1000,
+    commercial: 5000,
+    society: 3000,
+    offGrid: 2000
+  })
+  const [savingCommission, setSavingCommission] = useState(false)
+
+  useEffect(() => {
+    referralsApi.getCommissionConfig()
+      .then(setCommissionForm)
+      .catch(() => {})
+  }, [])
+
   /* ── Avatar upload ── */
   const handleAvatar = (e) => {
     const file = e.target.files[0]
@@ -87,6 +101,20 @@ export default function Settings() {
   /* ── Save Site Info ── */
   const saveSite = () => {
     toast.success('Site settings saved!')
+  }
+
+  /* ── Save Commission Rates ── */
+  const saveCommission = async () => {
+    setSavingCommission(true)
+    try {
+      const updated = await referralsApi.updateCommissionConfig(commissionForm)
+      setCommissionForm(updated)
+      toast.success('Referral commission rates updated successfully!')
+    } catch (e) {
+      toast.error(e.message)
+    } finally {
+      setSavingCommission(false)
+    }
   }
 
   /* ── Change Password ── */
@@ -281,6 +309,37 @@ export default function Settings() {
         <div className="flex justify-end" style={{ marginTop: 20 }}>
           <button className="btn btn-orange" onClick={saveSite} style={{ padding: '11px 26px' }}>
             <Save size={14} /> Save Site Info
+          </button>
+        </div>
+      </motion.div>
+
+      {/* ── Row 3: Referral Payout Settings ── */}
+      <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="glass" style={{ padding: '24px', marginTop: '24px' }}>
+        <div style={{ fontWeight: 700, fontSize: 14.5, color: 'white', marginBottom: 6 }}>Referral Payout Settings</div>
+        <p style={{ fontSize: 12, color: 'rgba(255,255,255,0.38)', marginBottom: 20 }}>Configure the reward commission (₹) that the referrer earns when their friend's project is created.</p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: 16 }}>
+          {[
+            { key: 'residential', label: 'Residential Solar', Icon: Home },
+            { key: 'commercial', label: 'Commercial Solar', Icon: Briefcase },
+            { key: 'society', label: 'Housing Society Solar', Icon: Users },
+            { key: 'offGrid', label: 'Off Grid Solar', Icon: Zap },
+          ].map(({ key, label, Icon }) => (
+            <div key={key}>
+              <Label>{label} Commission</Label>
+              <div style={{ position: 'relative' }}>
+                <IndianRupee size={13} color="rgba(255,255,255,0.22)"
+                  style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                <input className="input" style={{ paddingLeft: 32 }} type="number" placeholder="0"
+                  value={commissionForm[key] || 0} onChange={e => setCommissionForm(f => ({ ...f, [key]: Number(e.target.value) || 0 }))} />
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex justify-end" style={{ marginTop: 20 }}>
+          <button className="btn btn-orange" onClick={saveCommission} disabled={savingCommission} style={{ padding: '11px 26px' }}>
+            <Save size={14} /> {savingCommission ? 'Saving...' : 'Save Commission Rates'}
           </button>
         </div>
       </motion.div>

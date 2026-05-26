@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { Handshake, Trash2, CheckCircle, XCircle, ChevronLeft, ChevronRight, Eye, X, Mail, Phone, MapPin, Building2 } from 'lucide-react'
+import { Handshake, Trash2, CheckCircle, XCircle, ChevronLeft, ChevronRight, Eye, X, Mail, Phone, MapPin, Building2, Maximize2 } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
 import { toast } from 'react-toastify'
 import Swal from 'sweetalert2'
 import { partnersApi } from '../api'
@@ -12,11 +13,11 @@ const S = {
 const PER_PAGE = 5
 
 export default function Partners() {
+  const navigate = useNavigate()
   const [data, setData] = useState([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
   const [page, setPage] = useState(1)
-  const [viewing, setViewing] = useState(null)
 
   useEffect(() => {
     partnersApi.getAll()
@@ -34,7 +35,6 @@ export default function Partners() {
     try {
       const updated = await partnersApi.updateStatus(id, status)
       setData(prev => prev.map(d => d._id === id ? updated : d))
-      setViewing(v => v?._id === id ? updated : v)
       toast.success(`Partner ${status === 'approved' ? 'Approved ✓' : 'Rejected ✕'}`)
     } catch (e) { toast.error(e.message) }
   }
@@ -104,7 +104,7 @@ export default function Partners() {
                   : paginated.map((row) => {
                     const s = S[row.status]
                     return (
-                      <tr key={row._id}>
+                      <tr key={row._id} onDoubleClick={() => navigate(`/partners/${row._id}`)} style={{ cursor: 'pointer' }}>
                         <td>
                           <div style={{ fontWeight: 700, color: 'white', fontSize: 13 }}>{row.name}</div>
                           <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 2 }}>{row.email}</div>
@@ -115,20 +115,20 @@ export default function Partners() {
                         <td style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12 }}>{new Date(row.createdAt).toLocaleDateString('en-IN')}</td>
                         <td><span className="badge" style={{ background: s.bg, color: s.color, border: `1px solid ${s.border}` }}>{s.label}</span></td>
                         <td>
-                          <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
+                          <div style={{ display: 'flex', gap: 6, alignItems: 'center', justifyContent: 'end' }}>
                             {row.status !== 'approved' && (
                               <button onClick={() => updateStatus(row._id, 'approved')} title="Approve"
                                 style={{ background: 'rgba(34,197,94,0.12)', border: '1px solid rgba(34,197,94,0.25)', borderRadius: 8, padding: '5px 8px', cursor: 'pointer', color: '#22c55e', display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700 }}>
-                                <CheckCircle size={13} /> Approve
+                                <CheckCircle size={13} strokeWidth={2.5} /> Approve
                               </button>
                             )}
                             {row.status !== 'rejected' && (
                               <button onClick={() => updateStatus(row._id, 'rejected')} title="Reject"
                                 style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.2)', borderRadius: 8, padding: '5px 8px', cursor: 'pointer', color: '#ef4444', display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 700 }}>
-                                <XCircle size={13} /> Reject
+                                <XCircle size={13} strokeWidth={2.5} /> Reject
                               </button>
                             )}
-                            <button onClick={() => setViewing(row)} style={{ background: 'rgba(0,163,224,0.1)', border: '1px solid rgba(0,163,224,0.2)', borderRadius: 8, padding: '5px 7px', cursor: 'pointer', color: '#00A3E0' }}><Eye size={13} /></button>
+                            <button onClick={() => navigate(`/partners/${row._id}`)} style={{ background: 'rgba(0,163,224,0.1)', border: '1px solid rgba(0,163,224,0.2)', borderRadius: 8, padding: '5px 7px', cursor: 'pointer', color: '#00A3E0' }}><Eye size={13} /></button>
                             <button onClick={() => remove(row._id)} style={{ background: 'rgba(239,68,68,0.08)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: 8, padding: '5px 7px', cursor: 'pointer', color: '#f87171' }}><Trash2 size={13} /></button>
                           </div>
                         </td>
@@ -151,47 +151,6 @@ export default function Partners() {
           </div>
         )}
       </div>
-
-      {viewing && (
-        <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.75)', zIndex: 999, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }} onClick={() => setViewing(null)}>
-          <div style={{ background: 'linear-gradient(160deg,#0d1f55,#091640)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 20, width: '100%', maxWidth: 520, padding: 28, position: 'relative' }} onClick={e => e.stopPropagation()}>
-            <button onClick={() => setViewing(null)} style={{ position: 'absolute', top: 16, right: 16, background: 'rgba(255,255,255,0.07)', border: 'none', borderRadius: 8, padding: 6, cursor: 'pointer', color: 'rgba(255,255,255,0.5)' }}><X size={15} /></button>
-            <div style={{ fontSize: 11, fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: 1.2, marginBottom: 16 }}>Partner Application</div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 14, marginBottom: 20, paddingBottom: 20, borderBottom: '1px solid rgba(255,255,255,0.07)' }}>
-              <div style={{ width: 52, height: 52, borderRadius: '50%', background: 'linear-gradient(135deg,#FF7A00,#FFB800)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', fontWeight: 800, fontSize: 18, flexShrink: 0 }}>{viewing.name?.[0] ?? '?'}</div>
-              <div>
-                <div style={{ color: 'white', fontWeight: 800, fontSize: 17 }}>{viewing.name}</div>
-                <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: 12, marginTop: 3 }}>{new Date(viewing.createdAt).toLocaleDateString('en-IN')}</div>
-              </div>
-              <span style={{ marginLeft: 'auto', background: S[viewing.status].bg, color: S[viewing.status].color, border: `1px solid ${S[viewing.status].border}`, fontSize: 11, fontWeight: 700, padding: '4px 12px', borderRadius: 20 }}>{S[viewing.status].label}</span>
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, marginBottom: 18 }}>
-              {[
-                { icon: <Building2 size={13} />, label: 'Company', val: viewing.company },
-                { icon: <Building2 size={13} />, label: 'Type', val: viewing.type },
-                { icon: <Mail size={13} />, label: 'Email', val: viewing.email },
-                { icon: <Phone size={13} />, label: 'Phone', val: viewing.phone },
-                { icon: <MapPin size={13} />, label: 'City', val: viewing.city },
-              ].map(item => (
-                <div key={item.label} style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: '10px 12px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: '#FF7A00', marginBottom: 5 }}>{item.icon}<span style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: 1 }}>{item.label}</span></div>
-                  <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: 13, fontWeight: 600 }}>{item.val}</div>
-                </div>
-              ))}
-            </div>
-            <div style={{ background: 'rgba(255,255,255,0.04)', borderRadius: 10, padding: '12px 14px', marginBottom: 20 }}>
-              <div style={{ fontSize: 10, fontWeight: 700, color: 'rgba(255,255,255,0.3)', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 7 }}>Message</div>
-              <p style={{ color: 'rgba(255,255,255,0.7)', fontSize: 13, lineHeight: 1.65, margin: 0 }}>{viewing.message}</p>
-            </div>
-            {viewing.status === 'pending' && (
-              <div style={{ display: 'flex', gap: 10 }}>
-                <button onClick={() => updateStatus(viewing._id, 'approved')} style={{ flex: 1, padding: '11px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'rgba(34,197,94,0.15)', color: '#22c55e', fontWeight: 700, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}><CheckCircle size={15} /> Approve</button>
-                <button onClick={() => updateStatus(viewing._id, 'rejected')} style={{ flex: 1, padding: '11px', borderRadius: 10, border: 'none', cursor: 'pointer', background: 'rgba(239,68,68,0.15)', color: '#ef4444', fontWeight: 700, fontSize: 13, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6 }}><XCircle size={15} /> Reject</button>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
     </div>
   )
 }

@@ -11,6 +11,16 @@
   --teal: #00C9A7;
   --yellow: #FFC107;
 
+  /* ── Tailwind v4 Theme Mappings ── */
+  --color-navy: var(--navy);
+  --color-navy-dark: var(--navy-dark);
+  --color-navy-mid: var(--navy-mid);
+  --color-orange: var(--orange);
+  --color-orange-light: var(--orange-light);
+  --color-sky: var(--sky);
+  --color-teal: var(--teal);
+  --color-yellow: var(--yellow);
+
   /* ── Dark Theme (Default) ── */
   --bg-main: #080f2e;
   --bg-card: #0B1D51;
@@ -34,6 +44,7 @@
   --text-main: #1a1a1a;
   --text-dim: rgba(0, 0, 0, 0.6);
   --text-label: rgba(0, 0, 0, 0.45);
+  --navy-dark: #f8f9fa;
 }
 
 /* ── Base ── */
@@ -51,10 +62,17 @@ html {
 
 body {
   font-family: 'Space Grotesk', sans-serif;
-  background: var(--navy-dark);
-  color: white;
+  background: var(--bg-main);
+  color: var(--text-main);
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
+}
+
+body, aside, header, main, .glass, .nav-link, .btn, .input, .badge, .tbl, .tbl td {
+  transition: background-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              color 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+              box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* ── Scrollbar ── */
@@ -428,4 +446,74 @@ select.input option {
 .ql-toolbar.ql-snow .ql-picker-options .ql-option:hover {
   color: #FF7A00 !important;
   background: rgba(255, 122, 0, 0.1) !important;
+}
+
+/* ── Custom Cinematic Animations ── */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.03);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.35s ease-out forwards;
+}
+
+.animate-slideInUp {
+  animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slideInLeft {
+  animation: slideInLeft 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slideInRight {
+  animation: slideInRight 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-pulseGlow {
+  animation: pulseGlow 4s ease-in-out infinite;
 }

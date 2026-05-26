@@ -34,6 +34,7 @@ export const authApi = {
 
 export const contactsApi = {
   getAll:      ()              => get('/contacts'),
+  getById:     (id)            => get(`/contacts/${id}`),
   updateStatus:(id, status)   => patch(`/contacts/${id}/status`, { status }),
   delete:      (id)           => del(`/contacts/${id}`),
 }
@@ -98,4 +99,14 @@ export const notificationsApi = {
 export const dashboardApi = {
   stats:          () => get('/dashboard/stats'),
   recentContacts: () => get('/dashboard/recent-contacts'),
+}
+
+export const referralsApi = {
+  getAll:                 ()              => get('/referrals'),
+  updateStatus:           (id, status)    => patch(`/referrals/${id}/status`, { status }),
+  updateCommission:       (id, commission)=> patch(`/referrals/${id}/commission`, { commission }),
+  delete:                 (id)            => del(`/referrals/${id}`),
+  getCommissionConfig:    ()              => get('/referrals/commission-config'),
+  updateCommissionConfig: (body)          => put('/referrals/commission-config', body),
+  getQrCodeUrl:           (referrerId)    => `${BASE}/referrers/qrcode/${referrerId}`,
 }
