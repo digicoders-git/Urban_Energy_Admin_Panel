@@ -215,134 +215,252 @@ export default function Contacts() {
         <AnimatePresence>
           {selectedId && selectedContact && (
             <motion.div 
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 30 }}
-              transition={{ duration: 0.25, ease: "easeOut" }}
-              className="lg:col-span-2 bg-[var(--bg-card)] border border-[var(--border-card)] rounded-3xl p-6 md:p-7 relative z-30 shadow-2xl flex flex-col justify-between gap-6 h-full min-h-[580px] overflow-hidden"
+              initial={{ opacity: 0, x: 40, scale: 0.98 }}
+              animate={{ opacity: 1, x: 0, scale: 1 }}
+              exit={{ opacity: 0, x: 40, scale: 0.98 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+              style={{
+                background: 'linear-gradient(165deg, rgba(13, 31, 85, 0.75), rgba(9, 22, 64, 0.92))',
+                backdropFilter: 'blur(24px)',
+                border: '1px solid rgba(255, 255, 255, 0.08)',
+                boxShadow: '0 32px 64px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1)',
+                borderRadius: 28,
+                padding: '28px 24px',
+                position: 'relative',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'col',
+                justifyContent: 'space-between',
+                gap: '24px',
+                height: '100%',
+                minHeight: '620px',
+                zIndex: 30
+              }}
+              className="lg:col-span-2 shadow-2xl flex flex-col justify-between"
             >
+              {/* Backglow element */}
+              <div style={{ position: 'absolute', top: -40, right: -40, width: 180, height: 180, background: 'radial-gradient(circle, rgba(255,122,0,0.18) 0%, transparent 70%)', pointerEvents: 'none', borderRadius: '50%', zIndex: 0 }} />
+              <div style={{ position: 'absolute', bottom: -50, left: -50, width: 180, height: 180, background: 'radial-gradient(circle, rgba(34,197,94,0.1) 0%, transparent 70%)', pointerEvents: 'none', borderRadius: '50%', zIndex: 0 }} />
+
               {/* CLOSE BUTTON */}
               <button 
                 onClick={() => setSelectedId(null)} 
-                className="absolute top-5 right-5 w-8 h-8 rounded-full bg-[var(--bg-input)] border border-[var(--border-card)] flex items-center justify-center hover:bg-orange/10 hover:border-orange/20 transition-all text-[var(--text-dim)] hover:text-orange cursor-pointer shadow-sm active:scale-95 z-10"
+                style={{
+                  position: 'absolute',
+                  top: 20,
+                  right: 20,
+                  width: 34,
+                  height: 34,
+                  borderRadius: '50%',
+                  background: 'rgba(255,255,255,0.05)',
+                  border: '1px solid rgba(255,255,255,0.1)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                  color: 'rgba(255,255,255,0.6)',
+                  transition: 'all 0.2s',
+                  zIndex: 10
+                }}
+                onMouseEnter={e => { e.currentTarget.style.color = '#FF7A00'; e.currentTarget.style.borderColor = 'rgba(255,122,0,0.3)'; e.currentTarget.style.background = 'rgba(255,122,0,0.08)' }}
+                onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.6)'; e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)'; e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
               >
-                <X size={14} />
+                <X size={15} />
               </button>
 
-              <div className="flex-1 overflow-y-auto space-y-6 pr-1">
-                {/* Profile/Avatar header */}
-                <div className="flex items-center gap-4 text-left pb-2">
-                  <div className="w-14 h-14 rounded-2xl flex items-center justify-center font-bold text-xl text-white shadow-md flex-shrink-0"
-                    style={{ background: 'linear-gradient(135deg,#FF7A00,#FFB800)' }}>
-                    {selectedContact.name?.[0] ?? '?'}
+              <div style={{ flex: 1, overflowY: 'auto', zIndex: 1, paddingRight: '4px' }} className="space-y-6">
+                
+                {/* Profile/Avatar Header */}
+                <div style={{ display: 'flex', alignItems: 'center', gap: 16, textAlign: 'left', paddingBottom: 16, borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+                  <div style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <div style={{ position: 'absolute', inset: -3, borderRadius: 16, background: 'linear-gradient(135deg, #FF7A00, #FFB800)', opacity: 0.35, filter: 'blur(5px)' }} />
+                    <div className="w-14 h-14 rounded-2xl flex items-center justify-center font-bold text-xl text-white shadow-md flex-shrink-0"
+                      style={{ background: 'linear-gradient(135deg,#FF7A00,#FFB800)', border: '1.5px solid rgba(255,255,255,0.25)', position: 'relative', zIndex: 1 }}>
+                      {selectedContact.name?.[0] ?? '?'}
+                    </div>
                   </div>
-                  <div className="space-y-1.5">
-                    <h3 className="font-outfit font-extrabold text-xl text-[var(--text-main)] tracking-wide max-w-[200px] truncate leading-tight">{selectedContact.name}</h3>
-                    <div className="flex items-center gap-2">
-                      <span className="badge font-space text-[10.5px] px-2.5 py-0.5" style={{ background: S[selectedContact.status].bg, color: S[selectedContact.status].color, border: `1px solid ${S[selectedContact.status].border}` }}>
+                  <div className="space-y-2">
+                    <h3 style={{ margin: 0, fontWeight: 800, fontSize: 20, color: '#ffffff', letterSpacing: '0.3px', lineHeight: 1.25 }}>{selectedContact.name}</h3>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <span className="badge" style={{ background: S[selectedContact.status].bg, color: S[selectedContact.status].color, border: `1px solid ${S[selectedContact.status].border}`, fontSize: 10, fontWeight: 800, padding: '3px 10px', borderRadius: 20 }}>
                         {selectedContact.status}
                       </span>
+                      <span style={{ fontSize: 11, color: 'rgba(255,255,255,0.3)', fontWeight: 600 }}>ID: {selectedContact._id.slice(-6).toUpperCase()}</span>
                     </div>
                   </div>
                 </div>
 
                 {/* Section: Overview */}
-                <div className="space-y-3 text-left">
-                  <span className="text-[9px] font-space font-bold uppercase tracking-widest text-orange block pl-1">Lead Overview</span>
-                  <div className="grid grid-cols-2 gap-4 bg-[var(--bg-input)]/30 border border-[var(--border-card)] rounded-2xl p-4">
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-[8.5px] font-bold text-[var(--text-label)] uppercase tracking-wider font-orbitron">Record Type</span>
-                      <span className="text-xs font-semibold text-[var(--text-main)]">Contact Lead</span>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, textAlign: 'left' }}>
+                  <span style={{ fontSize: 10, fontFamily: 'Space Grotesk, sans-serif', fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1.2, color: '#FF7A00', display: 'block', paddingLeft: 4 }}>Lead Overview</span>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12, background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.06)', borderRadius: 16, padding: 14 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                      <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.3)', uppercase: true, tracking: '0.5px' }}>RECORD TYPE</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#ffffff' }}>Direct Inquiry</span>
                     </div>
-                    <div className="flex flex-col gap-0.5">
-                      <span className="text-[8.5px] font-bold text-[var(--text-label)] uppercase tracking-wider font-orbitron">Created Date</span>
-                      <span className="text-xs font-semibold text-[var(--text-main)]">{new Date(selectedContact.createdAt).toLocaleDateString('en-IN')}</span>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                      <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.3)', uppercase: true, tracking: '0.5px' }}>RECEIVED DATE</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: '#ffffff' }}>{new Date(selectedContact.createdAt).toLocaleDateString('en-IN')}</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Smart Solar Technical ROI Card */}
-                {selectedContact.bill && (
-                  <div className="space-y-3 text-left">
-                    <span className="text-[9px] font-space font-bold uppercase tracking-widest text-emerald-400 block pl-1">Technical ROI Assessment</span>
-                    <div className="bg-gradient-to-br from-emerald-500/[0.06] to-transparent border border-emerald-500/15 rounded-2xl p-4 text-left relative overflow-hidden shadow-md">
-                      <div className="absolute -top-12 -right-12 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl pointer-events-none" />
-                      
-                      <div className="grid grid-cols-3 gap-3">
-                        {/* System Size Recommendation */}
-                        <div className="bg-[var(--bg-card)]/60 border border-[var(--border-card)] rounded-xl p-3 flex flex-col gap-1.5 transition-all duration-300 hover:border-emerald-500/10">
-                          <span className="text-[7.5px] font-bold text-[var(--text-dim)]/70 uppercase tracking-wider font-space leading-tight">Recommended</span>
-                          <div className="text-[13px] font-extrabold text-[var(--text-main)] font-orbitron flex items-baseline gap-0.5 mt-auto">
-                            {Math.ceil(selectedContact.bill / 1500)} <span className="text-[9px] text-[var(--text-dim)]/80 font-sans font-medium">kWp</span>
+                {/* Technical ROI Assessment */}
+                {selectedContact.bill > 0 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, textAlign: 'left' }}>
+                    <span style={{ fontSize: 10, fontFamily: 'Space Grotesk, sans-serif', fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1.2, color: '#22c55e', display: 'block', paddingLeft: 4 }}>Rooftop ROI Analysis</span>
+                    <div style={{ background: 'linear-gradient(135deg, rgba(34,197,94,0.06), rgba(0,163,224,0.03))', border: '1px solid rgba(34,197,94,0.15)', borderRadius: 20, padding: 18, relative: 'true', boxShadow: '0 4px 20px rgba(0,0,0,0.15)' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
+                        
+                        <div style={{ background: 'rgba(9, 22, 64, 0.5)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 12, padding: 10, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                          <span style={{ fontSize: 8, fontWeight: 700, color: 'rgba(255,255,255,0.35)', uppercase: true, letterSpacing: '0.5px', lineHeight: 1.1 }}>RECOMMENDED</span>
+                          <div style={{ fontSize: 14, fontWeight: 800, color: '#ffffff', fontFamily: 'Space Grotesk, sans-serif', display: 'flex', alignItems: 'baseline', gap: 2, marginTop: 'auto' }}>
+                            {Math.max(1, Math.ceil(selectedContact.bill / 1500))} <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>kWp</span>
                           </div>
                         </div>
 
-                        {/* Estimated Monthly Savings */}
-                        <div className="bg-[var(--bg-card)]/60 border border-[var(--border-card)] rounded-xl p-3 flex flex-col gap-1.5 transition-all duration-300 hover:border-emerald-500/10">
-                          <span className="text-[7.5px] font-bold text-[var(--text-dim)]/70 uppercase tracking-wider font-space leading-tight">Est. Savings</span>
-                          <div className="text-[13px] font-extrabold text-emerald-400 font-orbitron flex items-baseline gap-0.5 mt-auto">
+                        <div style={{ background: 'rgba(9, 22, 64, 0.5)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 12, padding: 10, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                          <span style={{ fontSize: 8, fontWeight: 700, color: 'rgba(255,255,255,0.35)', uppercase: true, letterSpacing: '0.5px', lineHeight: 1.1 }}>EST. SAVINGS</span>
+                          <div style={{ fontSize: 14, fontWeight: 800, color: '#22c55e', fontFamily: 'Space Grotesk, sans-serif', display: 'flex', alignItems: 'baseline', gap: 1, marginTop: 'auto' }}>
                             ₹{Math.floor(selectedContact.bill * 0.85).toLocaleString('en-IN')}
                           </div>
                         </div>
 
-                        {/* Green Impact */}
-                        <div className="bg-[var(--bg-card)]/60 border border-[var(--border-card)] rounded-xl p-3 flex flex-col gap-1.5 transition-all duration-300 hover:border-emerald-500/10">
-                          <span className="text-[7.5px] font-bold text-[var(--text-dim)]/70 uppercase tracking-wider font-space leading-tight">CO2 Offsets</span>
-                          <div className="text-[13px] font-extrabold text-sky-400 font-orbitron flex items-baseline gap-0.5 mt-auto">
-                            {((selectedContact.bill / 8) * 12 * 0.0008).toFixed(1)} <span className="text-[9px] text-[var(--text-dim)]/80 font-sans font-medium">T</span>
+                        <div style={{ background: 'rgba(9, 22, 64, 0.5)', border: '1px solid rgba(255,255,255,0.05)', borderRadius: 12, padding: 10, display: 'flex', flexDirection: 'column', gap: 6 }}>
+                          <span style={{ fontSize: 8, fontWeight: 700, color: 'rgba(255,255,255,0.35)', uppercase: true, letterSpacing: '0.5px', lineHeight: 1.1 }}>CO₂ OFFSETS</span>
+                          <div style={{ fontSize: 14, fontWeight: 800, color: '#00A3E0', fontFamily: 'Space Grotesk, sans-serif', display: 'flex', alignItems: 'baseline', gap: 2, marginTop: 'auto' }}>
+                            {((selectedContact.bill / 8) * 12 * 0.0008).toFixed(1)} <span style={{ fontSize: 9, color: 'rgba(255,255,255,0.4)', fontWeight: 500 }}>T/Yr</span>
                           </div>
                         </div>
+
                       </div>
                     </div>
                   </div>
                 )}
 
-                {/* Detailed fields grid */}
-                <div className="space-y-3 text-left">
-                  <span className="text-[9px] font-space font-bold uppercase tracking-widest text-orange block pl-1">Contact Information</span>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {renderInfoCard("Email Address", selectedContact.email, Mail, "text-sky", true, "Email")}
-                    {renderInfoCard("Phone Number", selectedContact.phone, Phone, "text-orange", true, "Phone")}
-                    {renderInfoCard("City / Location", selectedContact.city, MapPin, "text-emerald-400")}
-                    {renderInfoCard("Monthly Bill", `₹${selectedContact.bill?.toLocaleString('en-IN')}/month`, IndianRupee, "text-yellow-400")}
+                {/* Contact Information Fields */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10, textAlign: 'left' }}>
+                  <span style={{ fontSize: 10, fontFamily: 'Space Grotesk, sans-serif', fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1.2, color: '#FF7A00', display: 'block', paddingLeft: 4 }}>Contact Credentials</span>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
                     
-                    <div className="md:col-span-2">
-                      {renderInfoCard("Inquiry Date & Time", formatDate(selectedContact.createdAt), Calendar, "text-purple-400")}
-                    </div>
-                    
-                    {selectedContact.message && (
-                      <div className="md:col-span-2 flex flex-col gap-3 bg-gradient-to-br from-[var(--bg-input)] to-transparent border border-[var(--border-card)] p-4.5 rounded-2xl text-left relative overflow-hidden shadow-inner mt-1">
-                        <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-orange to-orange-light" />
-                        <div className="flex items-center gap-2 text-[var(--text-label)]">
-                          <MessageSquare size={13} className="text-orange flex-shrink-0" />
-                          <span className="text-[9px] font-bold uppercase tracking-wider font-space block">Client Message</span>
+                    {[
+                      { label: "Email Address", val: selectedContact.email, icon: Mail, color: "#00A3E0", copyable: true },
+                      { label: "Phone Number", val: selectedContact.phone, icon: Phone, color: "#FF7A00", copyable: true },
+                      { label: "Location City", val: selectedContact.city, icon: MapPin, color: "#22c55e", copyable: false },
+                      { label: "Current Electric Bill", val: selectedContact.bill ? `₹${selectedContact.bill.toLocaleString('en-IN')}/Month` : 'N/A', icon: IndianRupee, color: "#eab308", copyable: false }
+                    ].map((item, idx) => (
+                      <div key={idx} style={{ 
+                        display: 'flex', 
+                        alignItems: 'center', 
+                        justifyContent: 'space-between', 
+                        background: 'rgba(255,255,255,0.03)', 
+                        border: '1px solid rgba(255,255,255,0.05)', 
+                        borderRadius: 16, 
+                        padding: '12px 16px',
+                        transition: 'all 0.2s'
+                      }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 12, minWidth: 0, flex: 1 }}>
+                          <div style={{ 
+                            width: 32, 
+                            height: 32, 
+                            borderRadius: 10, 
+                            background: 'rgba(255,255,255,0.04)', 
+                            border: '1px solid rgba(255,255,255,0.08)', 
+                            display: 'flex', 
+                            alignItems: 'center', 
+                            justifyContent: 'center',
+                            color: item.color,
+                            flexShrink: 0
+                          }}><item.icon size={14} /></div>
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: 2, minWidth: 0 }}>
+                            <span style={{ fontSize: 9, fontWeight: 700, color: 'rgba(255,255,255,0.3)', uppercase: true }}>{item.label}</span>
+                            <span style={{ fontSize: 13, fontWeight: 600, color: '#ffffff', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{item.val || '—'}</span>
+                          </div>
                         </div>
-                        <p className="text-xs text-[var(--text-dim)] leading-relaxed font-outfit font-light italic">"{selectedContact.message}"</p>
+                        {item.copyable && item.val && (
+                          <button 
+                            onClick={() => copyToClipboard(item.val, item.label.split(' ')[0])}
+                            style={{ 
+                              width: 28, 
+                              height: 28, 
+                              borderRadius: 8, 
+                              background: 'rgba(255,255,255,0.05)', 
+                              border: '1px solid rgba(255,255,255,0.08)', 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              justifyContent: 'center',
+                              cursor: 'pointer',
+                              color: 'rgba(255,255,255,0.5)',
+                              transition: 'all 0.2s',
+                              marginLeft: 8
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.color = '#ffffff'; e.currentTarget.style.background = 'rgba(255,255,255,0.1)' }}
+                            onMouseLeave={e => { e.currentTarget.style.color = 'rgba(255,255,255,0.5)'; e.currentTarget.style.background = 'rgba(255,255,255,0.05)' }}
+                          >
+                            {copiedField === item.label.split(' ')[0] ? <Check size={12} style={{ color: '#22c55e' }} /> : <Copy size={12} />}
+                          </button>
+                        )}
                       </div>
-                    )}
+                    ))}
+
                   </div>
                 </div>
+
+                {/* Client Message */}
+                {selectedContact.message && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10, textAlign: 'left' }}>
+                    <span style={{ fontSize: 10, fontFamily: 'Space Grotesk, sans-serif', fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1.2, color: '#FF7A00', display: 'block', paddingLeft: 4 }}>Inquiry message</span>
+                    <div style={{ 
+                      background: 'rgba(255,122,0,0.04)', 
+                      border: '1px solid rgba(255,122,0,0.12)', 
+                      borderRadius: 16, 
+                      padding: '14px 18px', 
+                      position: 'relative'
+                    }}>
+                      <div style={{ position: 'absolute', top: 0, left: 0, width: 3, height: '100%', background: 'linear-gradient(180deg, #FF7A00, #FFB800)', borderRadius: '3px 0 0 3px' }} />
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, color: 'rgba(255,255,255,0.3)', fontSize: 10, fontWeight: 700, textTransform: 'uppercase', letterSpacing: 0.5, marginBottom: 8 }}><MessageSquare size={12} color="#FF7A00" /> Client Notes</div>
+                      <p style={{ margin: 0, fontSize: 12.5, lineHeight: 1.6, color: 'rgba(255,255,255,0.7)', fontStyle: 'italic', fontWeight: 500 }}>"{selectedContact.message}"</p>
+                    </div>
+                  </div>
+                )}
+
               </div>
 
               {/* Sophisticated Segmented Tab Control Status Switcher */}
-              <div className="space-y-3 border-t border-[var(--border-card)] pt-4 text-left mt-auto">
-                <span className="text-[9px] font-bold uppercase tracking-wider text-[var(--text-label)] block font-orbitron pl-1">Set Lead Status</span>
-                <div className="grid grid-cols-3 bg-[var(--bg-input)] border border-[var(--border-card)] p-1 rounded-xl gap-1">
+              <div style={{ borderTop: '1px solid rgba(255,255,255,0.06)', paddingTop: 18, marginTop: 'auto', textAlign: 'left', zIndex: 1 }}>
+                <span style={{ fontSize: 10, fontWeight: 800, textTransform: 'uppercase', letterSpacing: 1, color: 'rgba(255,255,255,0.4)', display: 'block', paddingLeft: 4, marginBottom: 10 }}>Update Lead Status</span>
+                <div style={{ 
+                  display: 'grid', 
+                  gridTemplateColumns: '1fr 1fr 1fr', 
+                  background: 'rgba(255,255,255,0.03)', 
+                  border: '1px solid rgba(255,255,255,0.06)', 
+                  padding: 4, 
+                  borderRadius: 14, 
+                  gap: 4 
+                }}>
                   {['New', 'Contacted', 'Converted'].map(statusOption => {
                     const isActive = selectedContact.status === statusOption;
                     return (
                       <button
                         key={statusOption}
                         onClick={() => setStatus(selectedContact._id, statusOption)}
-                        className="py-2.5 text-center rounded-lg text-xs font-bold transition-all duration-200 cursor-pointer border-0"
                         style={{
+                          py: '10px',
+                          padding: '10px 4px',
+                          textAlign: 'center',
+                          borderRadius: 10,
+                          fontSize: 12,
+                          fontWeight: 700,
+                          transition: 'all 0.25s',
+                          cursor: 'pointer',
+                          border: 'none',
+                          outline: 'none',
                           background: isActive ? S[statusOption].bg : 'transparent',
-                          color: isActive ? S[statusOption].color : 'var(--text-dim)',
-                          opacity: isActive ? 1 : 0.65,
-                          boxShadow: isActive ? `0 2px 8px rgba(0,0,0,0.15)` : 'none'
+                          color: isActive ? S[statusOption].color : 'rgba(255,255,255,0.4)',
+                          border: isActive ? `1px solid ${S[statusOption].border}` : '1px solid transparent',
                         }}
                       >
-                        {capitalize(statusOption)}
+                        {statusOption}
                       </button>
                     );
                   })}

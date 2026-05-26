@@ -4,18 +4,19 @@ import { ToastContainer } from 'react-toastify'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { ThemeProvider } from './context/ThemeContext'
 import Layout from './components/Layout'
-import Login from './pages/Login'
-import Dashboard from './pages/Dashboard'
-import Contacts from './pages/Contacts'
-import RecordDetails from './pages/RecordDetails'
-import Queries from './pages/Queries'
-import Blogs from './pages/Blogs'
-import Settings from './pages/Settings'
-import Partners from './pages/Partners'
-import Referrals from './pages/Referrals'
-import GetQuotes from './pages/GetQuotes'
-import Reviews from './pages/Reviews'
-import Applications from './pages/Applications'
+import Login from './Pages/Login'
+import Dashboard from './Pages/Dashboard'
+import Contacts from './Pages/Contacts'
+import RecordDetails from './Pages/RecordDetails'
+import Queries from './Pages/Queries'
+import Blogs from './Pages/Blogs'
+import Settings from './Pages/Settings'
+import Partners from './Pages/Partners'
+import Referrers from './Pages/Referrers'
+import Referrals from './Pages/Referrals'
+import GetQuotes from './Pages/GetQuotes'
+import Reviews from './Pages/Reviews'
+import Applications from './Pages/Applications'
 
 function Guard({ children }) {
   const { user, loading } = useAuth()
@@ -43,6 +44,7 @@ function AppRoutes() {
       <Route path="/blogs" element={<Guard><Layout><Blogs /></Layout></Guard>} />
       <Route path="/partners" element={<Guard><Layout><Partners /></Layout></Guard>} />
       <Route path="/partners/:id" element={<Guard><Layout><RecordDetails type="partner" /></Layout></Guard>} />
+      <Route path="/referrers" element={<Guard><Layout><Referrers /></Layout></Guard>} />
       <Route path="/referrals" element={<Guard><Layout><Referrals /></Layout></Guard>} />
       <Route path="/referrals/:id" element={<Guard><Layout><RecordDetails type="referral" /></Layout></Guard>} />
       <Route path="/get-quotes" element={<Guard><Layout><GetQuotes /></Layout></Guard>} />
