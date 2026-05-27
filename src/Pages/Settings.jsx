@@ -8,7 +8,7 @@ import { authApi, referralsApi } from '../api'
 
 const CONTACT_FIELDS = [
   { key: 'phone', label: 'Phone Number', Icon: Phone, placeholder: '+91 98000 12345', type: 'text' },
-  { key: 'email', label: 'Email Address', Icon: Mail, placeholder: 'hello@vaulixsolar.in', type: 'email' },
+  { key: 'email', label: 'Email Address', Icon: Mail, placeholder: 'support@vaulixsolar.in', type: 'email' },
   { key: 'address', label: 'Office Address', Icon: MapPin, placeholder: 'City, State – PIN', type: 'text' },
   { key: 'whatsapp', label: 'WhatsApp Number', Icon: Phone, placeholder: '919800012345', type: 'text' },
   { key: 'apiUrl', label: 'Backend API URL', Icon: Globe, placeholder: 'https://api.example.com', type: 'url' },
@@ -43,7 +43,7 @@ export default function Settings() {
 
   const [siteForm, setSiteForm] = useState({
     phone: '+91 98000 12345',
-    email: 'hello@vaulixsolar.in',
+    email: 'support@vaulixsolar.in',
     address: 'Lucknow, Uttar Pradesh – 226001',
     whatsapp: '919800012345',
     apiUrl: 'https://api.vaulixsolar.in',
