@@ -53,10 +53,10 @@ export default function Settings() {
   const [showPass, setShowPass] = useState({ current: false, newPass: false, confirm: false })
 
   const [commissionForm, setCommissionForm] = useState({
-    residential: 1000,
-    commercial: 5000,
-    society: 3000,
-    offGrid: 2000
+    residential: 1999,
+    commercial: 4999,
+    society: 4999,
+    offGrid: 4999
   })
   const [savingCommission, setSavingCommission] = useState(false)
 
