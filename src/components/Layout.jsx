@@ -35,13 +35,13 @@ function SidebarContent({ onClose }) {
   return (
     <div className="flex flex-col h-full" style={{ padding: '20px 14px' }}>
       {/* Brand */}
-      <div className="flex flex-col items-end mb-2 px-2" style={{ position: 'relative' }}>
+      <div className="flex flex-col items-start mb-2 px-2" style={{ position: 'relative' }}>
         {onClose && (
           <button onClick={onClose} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 4, position: 'absolute', top: 0, right: 0 }}>
             <X size={18} color="var(--text-dim)" />
           </button>
         )}
-        <img src={Logo} alt="Vaulix Solar" className="w-20 h-20 object-contain" />
+        <img src={Logo} alt="Vaulix Solar" className="w-20 h-20 object-contain ml-4" />
       </div>
 
       {/* Nav */}
