@@ -9,6 +9,12 @@ import { toast } from 'react-toastify'
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
 
+const TYPE_LABELS = {
+  Dealer: 'Associate',
+  Installer: 'Installation Partner',
+  Distributor: 'Partner'
+}
+
 export default function LandscapeModal({ 
   isOpen, 
   onClose, 
@@ -248,7 +254,7 @@ export default function LandscapeModal({
       {renderInfoCard("Mobile Number", data.phone, Phone)}
       {renderInfoCard("Email Address", data.email, Mail)}
       {renderInfoCard("Location (City)", data.city, MapPin)}
-      {renderInfoCard("Partner Role Type", data.type, Zap)}
+      {renderInfoCard("Partner Role Type", TYPE_LABELS[data.type] || data.type, Zap)}
       {renderInfoCard("Application Date", formatDate(data.createdAt), Calendar)}
       {data.message && (
         <div className="col-span-2 flex flex-col gap-2 bg-white/[0.02] border border-white/5 p-4 rounded-2xl text-left">

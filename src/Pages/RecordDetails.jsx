@@ -57,6 +57,12 @@ const STATUS_STYLES = {
   }
 }
 
+const TYPE_LABELS = {
+  Dealer: 'Associate',
+  Installer: 'Installation Partner',
+  Distributor: 'Partner'
+}
+
 // Custom Bespoke Design System for individual grid cards
 const CARD_THEME = {
   "text-sky": {
@@ -706,7 +712,7 @@ export default function RecordDetails({ type }) {
       {renderInfoCard("Mobile Number", data.phone, Phone, "text-orange", true, "Phone")}
       {renderInfoCard("Email Address", data.email, Mail, "text-sky", true, "Email")}
       {renderInfoCard("Location (City)", data.city, MapPin, "text-emerald-400")}
-      {renderInfoCard("Partner Role Type", data.type, Zap, "text-purple-400")}
+      {renderInfoCard("Partner Role Type", TYPE_LABELS[data.type] || data.type, Zap, "text-purple-400")}
       {renderInfoCard("Application Date", formatDate(data.createdAt), Calendar, "text-pink-400")}
       {data.message && (
         <div className="md:col-span-2 flex flex-col gap-4 bg-gradient-to-br from-[#0B1D51]/40 to-[#080f2e]/30 border border-white/[0.08] p-6 rounded-2xl text-left relative overflow-hidden shadow-inner mt-2">

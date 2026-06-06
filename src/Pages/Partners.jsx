@@ -9,6 +9,11 @@ const S = {
   approved: { bg: 'rgba(34,197,94,0.12)', color: '#22c55e', border: 'rgba(34,197,94,0.25)', label: 'Approved' },
   rejected: { bg: 'rgba(239,68,68,0.12)', color: '#ef4444', border: 'rgba(239,68,68,0.25)', label: 'Rejected' },
 }
+const TYPE_LABELS = {
+  Dealer: 'Associate',
+  Installer: 'Installation Partner',
+  Distributor: 'Partner'
+}
 const PER_PAGE = 5
 
 export default function Partners() {
@@ -116,7 +121,7 @@ export default function Partners() {
                                 <div style={{ color: 'rgba(255,255,255,0.35)', fontSize: 11, marginTop: 2 }}>{row.email}</div>
                               </td>
                               <td style={{ color: 'rgba(255,255,255,0.6)', fontSize: 13 }}>{row.company}</td>
-                              <td><span className="badge" style={{ background: 'rgba(0,163,224,0.12)', color: '#00A3E0', border: '1px solid rgba(0,163,224,0.2)' }}>{row.type}</span></td>
+                              <td><span className="badge" style={{ background: 'rgba(0,163,224,0.12)', color: '#00A3E0', border: '1px solid rgba(0,163,224,0.2)' }}>{TYPE_LABELS[row.type] || row.type}</span></td>
                               <td style={{ color: 'rgba(255,255,255,0.55)', fontSize: 13 }}>{row.city}</td>
                               <td style={{ color: 'rgba(255,255,255,0.35)', fontSize: 12 }}>{new Date(row.createdAt).toLocaleDateString('en-IN')}</td>
                               <td><span className="badge" style={{ background: s.bg, color: s.color, border: `1px solid ${s.border}` }}>{s.label}</span></td>
@@ -250,7 +255,7 @@ export default function Partners() {
                     { label: "Phone Number", val: selectedRow.phone, icon: Phone, color: "#FF7A00" },
                     { label: "Email Address", val: selectedRow.email, icon: Mail, color: "#00A3E0" },
                     { label: "Location City", val: selectedRow.city, icon: MapPin, color: "#22c55e" },
-                    { label: "Organization Type", val: selectedRow.type, icon: Building2, color: "#eab308" }
+                    { label: "Organization Type", val: TYPE_LABELS[selectedRow.type] || selectedRow.type, icon: Building2, color: "#eab308" }
                   ].map((item, idx) => (
                     <div key={idx} style={{ 
                       display: 'flex', 
