@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Save, Phone, Mail, MapPin, Globe, Lock, Eye, EyeOff, Camera, User, Briefcase, Pencil, IndianRupee, Zap, Home, Users } from 'lucide-react'
+import { Save, Phone, Mail, MapPin, Globe, Lock, Eye, EyeOff, Camera, User, Briefcase, Pencil, IndianRupee, Zap, Home, Users, QrCode, Download, ExternalLink } from 'lucide-react'
 import { toast } from 'react-toastify'
 import Swal from 'sweetalert2'
+import QRCode from 'qrcode'
 import { useAuth } from '../context/AuthContext'
 import { authApi, referralsApi } from '../api'
 
@@ -11,7 +12,7 @@ const CONTACT_FIELDS = [
   { key: 'email', label: 'Email Address', Icon: Mail, placeholder: 'support@vaulixsolar.in', type: 'email' },
   { key: 'address', label: 'Office Address', Icon: MapPin, placeholder: 'City, State – PIN', type: 'text' },
   { key: 'whatsapp', label: 'WhatsApp Number', Icon: Phone, placeholder: '919800012345', type: 'text' },
-  { key: 'apiUrl', label: 'Backend API URL', Icon: Globe, placeholder: 'https://api.example.com', type: 'url' },
+  { key: 'websiteUrl', label: 'Website URL', Icon: Globe, placeholder: 'https://vaulixsolar.in', type: 'url' },
 ]
 
 const Label = ({ children }) => (
@@ -46,7 +47,7 @@ export default function Settings() {
     email: 'support@vaulixsolar.in',
     address: 'Lucknow, Uttar Pradesh – 226001',
     whatsapp: '919800012345',
-    apiUrl: 'https://api.vaulixsolar.in',
+    websiteUrl: 'https://vaulixsolar.in',
   })
 
   const [passForm, setPassForm] = useState({ current: '', newPass: '', confirm: '' })
@@ -59,6 +60,21 @@ export default function Settings() {
     offGrid: 4999
   })
   const [savingCommission, setSavingCommission] = useState(false)
+  const [qrText, setQrText] = useState('https://vaulixsolar.in')
+  const [qrCodeUrl, setQrCodeUrl] = useState('')
+
+  useEffect(() => {
+    QRCode.toDataURL(qrText || 'https://vaulixsolar.in', {
+      width: 400,
+      margin: 2,
+      color: {
+        dark: '#080f2e',
+        light: '#FFFFFF'
+      }
+    })
+      .then(url => setQrCodeUrl(url))
+      .catch(err => console.error(err))
+  }, [qrText])
 
   useEffect(() => {
     referralsApi.getCommissionConfig()
@@ -257,37 +273,91 @@ export default function Settings() {
           )}
         </motion.div>
 
-        {/* Password Card */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="glass" style={{ padding: '24px' }}>
-          <div style={{ fontWeight: 700, fontSize: 14.5, color: 'white', marginBottom: 20 }}>Change Password</div>
+        {/* Right Column: Password + QR Code */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          {/* Password Card */}
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 }} className="glass" style={{ padding: '24px' }}>
+            <div style={{ fontWeight: 700, fontSize: 14.5, color: 'white', marginBottom: 20 }}>Change Password</div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-            {[
-              { key: 'current', label: 'Current Password', placeholder: 'Enter current password' },
-              { key: 'newPass', label: 'New Password', placeholder: 'Enter new password' },
-              { key: 'confirm', label: 'Confirm Password', placeholder: 'Confirm new password' },
-            ].map(({ key, label, placeholder }) => (
-              <div key={key}>
-                <Label>{label}</Label>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              {[
+                { key: 'current', label: 'Current Password', placeholder: 'Enter current password' },
+                { key: 'newPass', label: 'New Password', placeholder: 'Enter new password' },
+                { key: 'confirm', label: 'Confirm Password', placeholder: 'Confirm new password' },
+              ].map(({ key, label, placeholder }) => (
+                <div key={key}>
+                  <Label>{label}</Label>
+                  <div style={{ position: 'relative' }}>
+                    <Lock size={14} color="rgba(255,255,255,0.22)"
+                      style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
+                    <input className="input" style={{ paddingLeft: 36, paddingRight: 40 }}
+                      type={showPass[key] ? 'text' : 'password'} placeholder={placeholder}
+                      value={passForm[key]} onChange={e => setPassForm(f => ({ ...f, [key]: e.target.value }))} />
+                    <button type="button" onClick={() => togglePass(key)}
+                      style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
+                      {showPass[key] ? <EyeOff size={14} color="rgba(255,255,255,0.28)" /> : <Eye size={14} color="rgba(255,255,255,0.28)" />}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button className="btn btn-orange" onClick={changePassword} style={{ marginTop: 20, width: '100%', justifyContent: 'center', padding: '11px' }}>
+              <Lock size={14} /> Update Password
+            </button>
+          </motion.div>
+
+          {/* Website QR Code Card */}
+          <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.12 }} className="glass" style={{ padding: '24px' }}>
+            <div className="flex items-center gap-2" style={{ marginBottom: 20 }}>
+              <QrCode size={18} color="#FF7A00" />
+              <div style={{ fontWeight: 700, fontSize: 14.5, color: 'white' }}>Website QR Code</div>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}>
+              {/* QR Image Preview */}
+              {qrCodeUrl ? (
+                <div style={{
+                  padding: 12,
+                  background: 'white',
+                  borderRadius: 12,
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '1px solid rgba(255,255,255,0.1)'
+                }}>
+                  <img src={qrCodeUrl} alt="Website QR Code" style={{ width: 140, height: 140, display: 'block' }} />
+                </div>
+              ) : (
+                <div style={{ width: 164, height: 164, background: 'rgba(255,255,255,0.05)', borderRadius: 12, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.3)' }}>
+                  Generating QR...
+                </div>
+              )}
+
+              {/* URL Input */}
+              <div style={{ width: '100%' }}>
+                <Label>QR Code URL</Label>
                 <div style={{ position: 'relative' }}>
-                  <Lock size={14} color="rgba(255,255,255,0.22)"
+                  <Globe size={14} color="rgba(255,255,255,0.22)"
                     style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
-                  <input className="input" style={{ paddingLeft: 36, paddingRight: 40 }}
-                    type={showPass[key] ? 'text' : 'password'} placeholder={placeholder}
-                    value={passForm[key]} onChange={e => setPassForm(f => ({ ...f, [key]: e.target.value }))} />
-                  <button type="button" onClick={() => togglePass(key)}
-                    style={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
-                    {showPass[key] ? <EyeOff size={14} color="rgba(255,255,255,0.28)" /> : <Eye size={14} color="rgba(255,255,255,0.28)" />}
-                  </button>
+                  <input className="input" style={{ paddingLeft: 36 }} type="url" placeholder="https://vaulixsolar.in"
+                    value={qrText} onChange={e => setQrText(e.target.value)} />
                 </div>
               </div>
-            ))}
-          </div>
 
-          <button className="btn btn-orange" onClick={changePassword} style={{ marginTop: 20, width: '100%', justifyContent: 'center', padding: '11px' }}>
-            <Lock size={14} /> Update Password
-          </button>
-        </motion.div>
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', gap: 10, width: '100%', marginTop: 4 }}>
+                <a href={qrCodeUrl} download="vaulixsolar-qr.png" className="btn btn-orange" style={{ flex: 1, textDecoration: 'none', justifyContent: 'center' }}>
+                  <Download size={14} /> Download QR
+                </a>
+                <a href={qrText} target="_blank" rel="noopener noreferrer" className="btn btn-ghost" style={{ flex: 1, textDecoration: 'none', justifyContent: 'center' }}>
+                  <ExternalLink size={14} /> Visit Link
+                </a>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
 
       {/* ── Row 2: Site Info ── */}
