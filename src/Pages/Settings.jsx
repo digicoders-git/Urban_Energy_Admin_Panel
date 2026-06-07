@@ -60,11 +60,11 @@ export default function Settings() {
     offGrid: 4999
   })
   const [savingCommission, setSavingCommission] = useState(false)
-  const [qrText, setQrText] = useState('https://vaulixsolar.in')
+  const [qrText, setQrText] = useState('https://vaulixsolar.in/refer-now')
   const [qrCodeUrl, setQrCodeUrl] = useState('')
 
   useEffect(() => {
-    QRCode.toDataURL(qrText || 'https://vaulixsolar.in', {
+    QRCode.toDataURL(qrText || 'https://vaulixsolar.in/refer-now', {
       width: 400,
       margin: 2,
       color: {
@@ -341,7 +341,7 @@ export default function Settings() {
                 <div style={{ position: 'relative' }}>
                   <Globe size={14} color="rgba(255,255,255,0.22)"
                     style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
-                  <input className="input" style={{ paddingLeft: 36 }} type="url" placeholder="https://vaulixsolar.in"
+                  <input className="input" style={{ paddingLeft: 36 }} type="url" placeholder="https://vaulixsolar.in/refer-now"
                     value={qrText} onChange={e => setQrText(e.target.value)} />
                 </div>
               </div>
