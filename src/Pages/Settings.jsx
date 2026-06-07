@@ -1,3 +1,4 @@
+
 import React, { useState, useRef, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Save, Phone, Mail, MapPin, Globe, Lock, Eye, EyeOff, Camera, User, Briefcase, Pencil, IndianRupee, Zap, Home, Users, QrCode, Download, ExternalLink } from 'lucide-react'
@@ -54,10 +55,10 @@ export default function Settings() {
   const [showPass, setShowPass] = useState({ current: false, newPass: false, confirm: false })
 
   const [commissionForm, setCommissionForm] = useState({
-    residential: 1999,
-    commercial: 4999,
-    society: 4999,
-    offGrid: 4999
+    residential: '1999',
+    commercial: '4999',
+    society: '4999',
+    offGrid: '4999'
   })
   const [savingCommission, setSavingCommission] = useState(false)
   const [qrText, setQrText] = useState('https://vaulixsolar.in/refer-now')
@@ -78,7 +79,14 @@ export default function Settings() {
 
   useEffect(() => {
     referralsApi.getCommissionConfig()
-      .then(setCommissionForm)
+      .then(data => {
+        setCommissionForm({
+          residential: data.residential?.toString() || '',
+          commercial: data.commercial?.toString() || '',
+          society: data.society?.toString() || '',
+          offGrid: data.offGrid?.toString() || ''
+        })
+      })
       .catch(() => {})
   }, [])
 
@@ -123,8 +131,20 @@ export default function Settings() {
   const saveCommission = async () => {
     setSavingCommission(true)
     try {
-      const updated = await referralsApi.updateCommissionConfig(commissionForm)
-      setCommissionForm(updated)
+      const payload = {
+        residential: commissionForm.residential === '' ? 0 : Number(commissionForm.residential),
+        commercial: commissionForm.commercial === '' ? 0 : Number(commissionForm.commercial),
+        society: commissionForm.society === '' ? 0 : Number(commissionForm.society),
+        offGrid: commissionForm.offGrid === '' ? 0 : Number(commissionForm.offGrid),
+      }
+      const updated = await referralsApi.updateCommissionConfig(payload)
+      // Convert numbers back to strings for the form
+      setCommissionForm({
+        residential: updated.residential.toString(),
+        commercial: updated.commercial.toString(),
+        society: updated.society.toString(),
+        offGrid: updated.offGrid.toString()
+      })
       toast.success('Referral commission rates updated successfully!')
     } catch (e) {
       toast.error(e.message)
@@ -400,8 +420,12 @@ export default function Settings() {
               <div style={{ position: 'relative' }}>
                 <IndianRupee size={13} color="rgba(255,255,255,0.22)"
                   style={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', pointerEvents: 'none' }} />
-                <input className="input" style={{ paddingLeft: 32 }} type="number" placeholder="0"
-                  value={commissionForm[key] || 0} onChange={e => setCommissionForm(f => ({ ...f, [key]: Number(e.target.value) || 0 }))} />
+                <input className="input" style={{ paddingLeft: 32 }} type="text" inputMode="numeric" placeholder="Enter amount"
+                  value={commissionForm[key] || ''} 
+                  onChange={e => {
+                    const val = e.target.value.replace(/[^0-9]/g, '');
+                    setCommissionForm(f => ({ ...f, [key]: val }));
+                  }} />
               </div>
             </div>
           ))}
